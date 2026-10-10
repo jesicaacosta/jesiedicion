@@ -1,419 +1,1677 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>JESI Estudio · Edición de video, páginas web y apps</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Jost:wght@400;500&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
-<!-- ESTILOS (CSS) — todo vive en este archivo, sin dependencias.
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>JESI Estudio · Edición de video, páginas web y apps</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Jost:wght@400;500&family=Mrs+Saint+Delafield&display=swap"
+      rel="stylesheet"
+    />
+    <!-- ESTILOS (CSS) — todo vive en este archivo, sin dependencias.
        Orden: variables → base → navbar → botones → carrusel → secciones → modales → footer. -->
-<style>
-/* VARIABLES DE MARCA (paleta del moodboard). Cambiás un color acá y se actualiza en toda la web.
+    <style>
+      /* VARIABLES DE MARCA (paleta del moodboard). Cambiás un color acá y se actualiza en toda la web.
      --bg fondo | --s1/--s2 superficies (tarjetas/modales) | --ink texto crema | --mut texto apagado
      --line bordes | --bor borgoña (botones) | --ver verde bosque (tarjeta destacada) | --oro dorado (acentos)
      padding-bottom con env(): respeta la barra inferior del iPhone (safe-area). */
-:root{--bg:#0b0909;--s1:#151111;--s2:#1f1819;--ink:#efe8dc;--mut:#b3a58f;--line:#33292a;--bor:#7a1f2b;--ver:#1f3a2d;--oro:#c9a24d;
-box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px)}
-/* BASE: box-sizing global, scroll suave y scroll-padding-top para que el menú fijo no tape los títulos al navegar por anclas. */
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:84px;background:var(--bg)}
-/* Tipografía de texto: Jost (sans). Los títulos usan Bodoni Moda (serif); la manuscrita es Mrs Saint Delafield. Se cargan por Google Fonts en el <head>. */
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.65 'Jost',system-ui,sans-serif}
-/* Títulos en Bodoni Moda; h2 usa clamp() para escalar según el ancho de pantalla. */
-h1,h2,h3{font-family:'Bodoni Moda',Georgia,serif;margin:0;line-height:1.08;font-weight:500}
-h2{font-size:clamp(2.1rem,5vw,3.3rem)}
-/* .k = etiqueta chica en mayúsculas con espaciado (estilo de tu moodboard). .script = tipografía manuscrita. */
-.k{font:500 .78rem 'Jost',sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--mut)}
-.script{font-family:'Mrs Saint Delafield','Segoe Script',cursive;color:var(--oro);font-weight:400}
-/* .wrap: contenedor centrado de 1120px máx. Se repite dentro de cada <section>. */
-.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-section{padding:76px 0}
-.lead{color:var(--mut);max-width:60ch;margin:12px 0 28px}
-a{color:inherit}:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
-.star{color:var(--oro)}
-/* NAVBAR fija arriba (position:sticky) con fondo translúcido + blur. padding-top respeta el notch del celular. */
-.top{position:sticky;top:0;z-index:20;background:rgba(11,9,9,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
-.top .wrap{display:flex;align-items:center;gap:20px;height:68px}
-.logo{text-decoration:none;display:flex;flex-direction:column;align-items:center;line-height:1;white-space:nowrap}
-.logo b{font:700 1.7rem 'Bodoni Moda',serif;letter-spacing:-.02em}
-.logo small{font-size:.55rem;letter-spacing:.5em;color:var(--mut);margin-left:.5em}
-/* Menú de links: en celular scrollea horizontalmente (overflow-x:auto) y se oculta el logo (media query de abajo). */
-.links{display:flex;gap:2px;overflow-x:auto;flex:1;justify-content:flex-end;scrollbar-width:none}
-.links a{padding:8px 13px;border-radius:99px;text-decoration:none;color:var(--mut);white-space:nowrap;font-size:.95rem}
-.links a:hover{color:var(--ink)}.links a.cta{background:var(--bor);color:var(--ink)}
-@media(max-width:700px){.logo{display:none}.links{justify-content:flex-start}}
-/* BOTONES: .btn (borgoña, principal) | .btn.g (contorno, secundario) | .btn.c (crema, usado sobre el carrusel). */
-.btn{background:var(--bor);color:var(--ink);border:0;border-radius:99px;padding:12px 28px;font:500 1rem 'Jost',sans-serif;cursor:pointer;text-decoration:none;display:inline-block}
-.btn:hover{background:#8d2735}
-.btn.g{background:transparent;border:1.5px solid var(--line)}.btn.g:hover{border-color:var(--oro)}
-.btn.c{background:var(--ink);color:#150d0d}
-/* CARRUSEL: .track es una fila flex; cada .slide ocupa 100% del ancho. JS lo mueve con translateX (ver function go). */
-.car{position:relative;overflow:hidden;border-radius:26px;background:var(--s1);margin-top:22px}
-.track{display:flex;transition:transform .6s cubic-bezier(.7,0,.2,1)}
-/* .slide: grilla de 2 columnas (texto + arco). En móvil pasa a 1 columna (media query). */
-.slide{min-width:100%;display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;padding:clamp(24px,5vw,56px);min-height:430px}
-.slide .tx{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
-.slide h1,.slide h2{font-size:clamp(2.2rem,5.6vw,4.2rem);max-width:14ch}
-.slide p{margin:0;max-width:42ch;font-size:1.08rem;opacity:.92}
-/* .arch: recuadro con forma de arco (border-radius arriba redondeado) que muestra el descuento de cada promo. */
-.arch{border:1.5px solid var(--oro);border-radius:999px 999px 20px 20px;padding:70px 20px 44px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
-.arch .big{font:500 clamp(1.9rem,4.4vw,3rem)/1 'Bodoni Moda',serif;color:var(--oro)}
-.arch span{font-size:.95rem;opacity:.9}
-@media(max-width:760px){.slide{grid-template-columns:1fr;min-height:0;padding-bottom:64px}.arch{padding:36px 16px 28px}}
-/* Flechas y puntitos del carrusel (el punto activo se estira: aria-current="true"). */
-.arr{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:1.3rem;cursor:pointer}
-.arr.l{left:10px}.arr.r{right:10px}
-.dots{position:absolute;bottom:16px;left:0;right:0;display:flex;gap:8px;justify-content:center}
-.dots button{width:10px;height:10px;border-radius:99px;border:0;background:rgba(239,232,220,.35);cursor:pointer;padding:0}
-.dots button[aria-current="true"]{width:28px;background:var(--oro)}
-/* SECCIÓN QUIÉN SOY: 2 columnas (texto + tarjetas .sv de servicios). */
-.about{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
-@media(max-width:760px){.about{grid-template-columns:1fr}}
-.about .big{font:italic 500 clamp(1.3rem,3vw,1.8rem)/1.35 'Bodoni Moda',serif;margin:14px 0}
-.about p{color:var(--mut);margin:0 0 14px}
-.sv{display:flex;flex-direction:column;gap:12px}
-.sv div{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:18px 22px}
-.sv b{font:500 1.3rem 'Bodoni Moda',serif;display:block}.sv span{color:var(--mut);font-size:.95rem}
-/* FILTROS del portfolio (.chip). El activo se marca con aria-pressed="true". */
-nav.f{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 0 22px}
-.chip{border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:8px 17px;border-radius:99px;font:500 .95rem 'Jost',sans-serif;cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--ink);color:#150d0d;border-color:var(--ink)}
-.sp{flex:1}.edit{border-style:dashed;color:var(--mut)}
-/* GRILLA DE TRABAJOS: auto-fill con tarjetas de mínimo 250px → se acomoda sola según el ancho. */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;align-items:start}
-.item{position:relative}
-/* .card: cada trabajo es un <button> (accesible por teclado). .cover puede ser <img> (portada) o <div> con degradé. */
-.card{background:var(--s1);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:inherit;font:inherit;display:block;width:100%}
-.card:hover{border-color:var(--oro)}
-/* Forma de la portada: horizontal 16:9 por defecto; con la clase .v (vertical) pasa a 9:16. La clase la pone el JS (function orient). */
-.cw{aspect-ratio:16/9;overflow:hidden}.cw.v{aspect-ratio:9/16}
-.cover{width:100%;height:100%;object-fit:cover;display:flex;align-items:flex-end;padding:18px;font:500 1.5rem 'Bodoni Moda',serif;color:var(--ink)}
-.badge{position:absolute;top:12px;left:12px;background:rgba(11,9,9,.75);color:var(--ink);font-size:.78rem;padding:4px 11px;border-radius:99px}
-.meta{padding:14px 16px 16px}.meta h3{font-size:1.15rem}.meta span{color:var(--mut);font-size:.9rem}
-.del{position:absolute;top:10px;right:10px;background:var(--bor);color:#fff;border:0;border-radius:99px;width:30px;height:30px;cursor:pointer}
-.empty,.hint{color:var(--mut)}.hint{font-size:.9rem}
-/* CÓMO CONTRATAR: numeración automática con CSS counters (counter-reset / counter-increment), sin números escritos a mano. */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;counter-reset:s}
-.step{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:24px}
-.step::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--oro);color:var(--oro);font:500 1.2rem 'Bodoni Moda',serif;margin-bottom:14px}
-.step h3{font-size:1.25rem;margin-bottom:6px}.step p{margin:0;color:var(--mut);font-size:.96rem}
-/* PRECIOS: .prices es una grilla de .price; .hot resalta la tarjeta destacada (borde dorado + fondo verde) y .pill es la etiqueta. */
-.sub{margin:40px 0 16px;font-size:1.55rem}
-.prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.price{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:6px;position:relative}
-.price.hot{border-color:var(--oro);background:linear-gradient(180deg,var(--ver),var(--s1) 80%)}
-.price h3{font-size:1.3rem}.price .n{font:500 2rem 'Bodoni Moda',serif;color:var(--oro)}
-.price .s{font-size:.95rem}.price .r{color:var(--mut);font-size:.95rem;flex:1;margin:4px 0 12px}
-.pill{position:absolute;top:-12px;left:22px;background:var(--oro);color:#150d0d;font-size:.75rem;font-weight:500;padding:3px 12px;border-radius:99px;letter-spacing:.08em}
-/* .note: aviso de precios de referencia. */
-.note{background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--oro);border-radius:12px;padding:14px 18px;color:var(--mut);max-width:80ch;margin:0 0 8px}
-/* CONTACTO: 2 columnas (vías de contacto + formulario). */
-.contact{display:grid;grid-template-columns:1fr 1fr;gap:32px}
-@media(max-width:760px){.contact{grid-template-columns:1fr}}
-.ways{display:flex;flex-direction:column;gap:12px}
-.way{display:block;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:16px 20px;text-decoration:none}
-.way:hover{border-color:var(--oro)}.way b{display:block;font-weight:500}.way span{color:var(--mut);font-size:.92rem}
-form{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:24px}
-label{display:block;font-weight:500;margin:12px 0 6px;font-size:.92rem}
-input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
-/* MODALES: usan el elemento nativo <dialog> (showModal()/close()); ::backdrop oscurece el fondo. Hay 3: #info, #viewer, #adder. */
-dialog{border:0;border-radius:20px;background:var(--s2);color:var(--ink);padding:26px;width:min(600px,92vw);max-height:90vh}
-dialog::backdrop{background:rgba(0,0,0,.82)}
-dialog h4{font:500 .8rem 'Jost',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin:20px 0 6px}
-dialog ul{margin:0;padding-left:20px}dialog li{margin:4px 0}
-.mp{font:500 2rem 'Bodoni Moda',serif;color:var(--oro);margin:4px 0}
-.row{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
-.player{aspect-ratio:16/9;width:100%;border:0;border-radius:12px;background:#000;margin-top:14px}
-.big-img{width:100%;max-height:60vh;object-fit:contain;border-radius:12px;margin-top:14px}
-/* VISOR DE VIDEO: .phone = marco de celular para videos VERTICALES (reels, TikToks, shorts).
+      :root {
+        --bg: #0b0909;
+        --s1: #151111;
+        --s2: #1f1819;
+        --ink: #efe8dc;
+        --mut: #b3a58f;
+        --line: #33292a;
+        --bor: #7a1f2b;
+        --ver: #1f3a2d;
+        --oro: #c9a24d;
+        box-sizing: border-box;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      /* BASE: box-sizing global, scroll suave y scroll-padding-top para que el menú fijo no tape los títulos al navegar por anclas. */
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 84px;
+        background: var(--bg);
+      }
+      /* Tipografía de texto: Jost (sans). Los títulos usan Bodoni Moda (serif); la manuscrita es Mrs Saint Delafield. Se cargan por Google Fonts en el <head>. */
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          400 16px/1.65 "Jost",
+          system-ui,
+          sans-serif;
+      }
+      /* Títulos en Bodoni Moda; h2 usa clamp() para escalar según el ancho de pantalla. */
+      h1,
+      h2,
+      h3 {
+        font-family: "Bodoni Moda", Georgia, serif;
+        margin: 0;
+        line-height: 1.08;
+        font-weight: 500;
+      }
+      h2 {
+        font-size: clamp(2.1rem, 5vw, 3.3rem);
+      }
+      /* .k = etiqueta chica en mayúsculas con espaciado (estilo de tu moodboard). .script = tipografía manuscrita. */
+      .k {
+        font:
+          500 0.78rem "Jost",
+          sans-serif;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--mut);
+      }
+      .script {
+        font-family: "Mrs Saint Delafield", "Segoe Script", cursive;
+        color: var(--oro);
+        font-weight: 400;
+      }
+      /* .wrap: contenedor centrado de 1120px máx. Se repite dentro de cada <section>. */
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      section {
+        padding: 76px 0;
+      }
+      .lead {
+        color: var(--mut);
+        max-width: 60ch;
+        margin: 12px 0 28px;
+      }
+      a {
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--oro);
+        outline-offset: 2px;
+      }
+      .star {
+        color: var(--oro);
+      }
+      /* NAVBAR fija arriba (position:sticky) con fondo translúcido + blur. padding-top respeta el notch del celular. */
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(11, 9, 9, 0.88);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      .top .wrap {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 68px;
+      }
+      .logo {
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .logo b {
+        font:
+          700 1.7rem "Bodoni Moda",
+          serif;
+        letter-spacing: -0.02em;
+      }
+      .logo small {
+        font-size: 0.55rem;
+        letter-spacing: 0.5em;
+        color: var(--mut);
+        margin-left: 0.5em;
+      }
+      /* Menú de links: en celular scrollea horizontalmente (overflow-x:auto) y se oculta el logo (media query de abajo). */
+      .links {
+        display: flex;
+        gap: 2px;
+        overflow-x: auto;
+        flex: 1;
+        justify-content: flex-end;
+        scrollbar-width: none;
+      }
+      .links a {
+        padding: 8px 13px;
+        border-radius: 99px;
+        text-decoration: none;
+        color: var(--mut);
+        white-space: nowrap;
+        font-size: 0.95rem;
+      }
+      .links a:hover {
+        color: var(--ink);
+      }
+      .links a.cta {
+        background: var(--bor);
+        color: var(--ink);
+      }
+      @media (max-width: 700px) {
+        .logo {
+          display: none;
+        }
+        .links {
+          justify-content: flex-start;
+        }
+      }
+      /* BOTONES: .btn (borgoña, principal) | .btn.g (contorno, secundario) | .btn.c (crema, usado sobre el carrusel). */
+      .btn {
+        background: var(--bor);
+        color: var(--ink);
+        border: 0;
+        border-radius: 99px;
+        padding: 12px 28px;
+        font:
+          500 1rem "Jost",
+          sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn:hover {
+        background: #8d2735;
+      }
+      .btn.g {
+        background: transparent;
+        border: 1.5px solid var(--line);
+      }
+      .btn.g:hover {
+        border-color: var(--oro);
+      }
+      .btn.c {
+        background: var(--ink);
+        color: #150d0d;
+      }
+      /* CARRUSEL: .track es una fila flex; cada .slide ocupa 100% del ancho. JS lo mueve con translateX (ver function go). */
+      .car {
+        position: relative;
+        overflow: hidden;
+        border-radius: 26px;
+        background: var(--s1);
+        margin-top: 22px;
+      }
+      .track {
+        display: flex;
+        transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1);
+      }
+      /* .slide: grilla de 2 columnas (texto + arco). En móvil pasa a 1 columna (media query). */
+      .slide {
+        min-width: 100%;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 28px;
+        align-items: center;
+        padding: clamp(24px, 5vw, 56px);
+        min-height: 430px;
+      }
+      .slide .tx {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .slide h1,
+      .slide h2 {
+        font-size: clamp(2.2rem, 5.6vw, 4.2rem);
+        max-width: 14ch;
+      }
+      .slide p {
+        margin: 0;
+        max-width: 42ch;
+        font-size: 1.08rem;
+        opacity: 0.92;
+      }
+      /* .arch: recuadro con forma de arco (border-radius arriba redondeado) que muestra el descuento de cada promo. */
+      .arch {
+        border: 1.5px solid var(--oro);
+        border-radius: 999px 999px 20px 20px;
+        padding: 70px 20px 44px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+      .arch .big {
+        font:
+          500 clamp(1.9rem, 4.4vw, 3rem)/1 "Bodoni Moda",
+          serif;
+        color: var(--oro);
+      }
+      .arch span {
+        font-size: 0.95rem;
+        opacity: 0.9;
+      }
+      @media (max-width: 760px) {
+        .slide {
+          grid-template-columns: 1fr;
+          min-height: 0;
+          padding-bottom: 64px;
+        }
+        .arch {
+          padding: 36px 16px 28px;
+        }
+      }
+      /* Flechas y puntitos del carrusel (el punto activo se estira: aria-current="true"). */
+      .arr {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 0;
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        font-size: 1.3rem;
+        cursor: pointer;
+      }
+      .arr.l {
+        left: 10px;
+      }
+      .arr.r {
+        right: 10px;
+      }
+      .dots {
+        position: absolute;
+        bottom: 16px;
+        left: 0;
+        right: 0;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+      .dots button {
+        width: 10px;
+        height: 10px;
+        border-radius: 99px;
+        border: 0;
+        background: rgba(239, 232, 220, 0.35);
+        cursor: pointer;
+        padding: 0;
+      }
+      .dots button[aria-current="true"] {
+        width: 28px;
+        background: var(--oro);
+      }
+      /* SECCIÓN QUIÉN SOY: 2 columnas (texto + tarjetas .sv de servicios). */
+      .about {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 44px;
+        align-items: center;
+      }
+      @media (max-width: 760px) {
+        .about {
+          grid-template-columns: 1fr;
+        }
+      }
+      .about .big {
+        font:
+          italic 500 clamp(1.3rem, 3vw, 1.8rem)/1.35 "Bodoni Moda",
+          serif;
+        margin: 14px 0;
+      }
+      .about p {
+        color: var(--mut);
+        margin: 0 0 14px;
+      }
+      .sv {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .sv div {
+        background: var(--s1);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 22px;
+      }
+      .sv b {
+        font:
+          500 1.3rem "Bodoni Moda",
+          serif;
+        display: block;
+      }
+      .sv span {
+        color: var(--mut);
+        font-size: 0.95rem;
+      }
+      /* FILTROS del portfolio (.chip). El activo se marca con aria-pressed="true". */
+      nav.f {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 6px 0 22px;
+      }
+      .chip {
+        border: 1.5px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+        padding: 8px 17px;
+        border-radius: 99px;
+        font:
+          500 0.95rem "Jost",
+          sans-serif;
+        cursor: pointer;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--ink);
+        color: #150d0d;
+        border-color: var(--ink);
+      }
+      .sp {
+        flex: 1;
+      }
+      .edit {
+        border-style: dashed;
+        color: var(--mut);
+      }
+      /* GRILLA DE TRABAJOS: auto-fill con tarjetas de mínimo 250px → se acomoda sola según el ancho. */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 18px;
+        align-items: start;
+      }
+      .item {
+        position: relative;
+      }
+      /* .card: cada trabajo es un <button> (accesible por teclado). .cover puede ser <img> (portada) o <div> con degradé. */
+      .card {
+        background: var(--s1);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        cursor: pointer;
+        text-align: left;
+        padding: 0;
+        color: inherit;
+        font: inherit;
+        display: block;
+        width: 100%;
+      }
+      .card:hover {
+        border-color: var(--oro);
+      }
+      /* Forma de la portada: horizontal 16:9 por defecto; con la clase .v (vertical) pasa a 9:16. La clase la pone el JS (function orient). */
+      .cw {
+        aspect-ratio: 16/9;
+        overflow: hidden;
+      }
+      .cw.v {
+        aspect-ratio: 9/16;
+      }
+      .cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: flex;
+        align-items: flex-end;
+        padding: 18px;
+        font:
+          500 1.5rem "Bodoni Moda",
+          serif;
+        color: var(--ink);
+      }
+      .badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(11, 9, 9, 0.75);
+        color: var(--ink);
+        font-size: 0.78rem;
+        padding: 4px 11px;
+        border-radius: 99px;
+      }
+      .meta {
+        padding: 14px 16px 16px;
+      }
+      .meta h3 {
+        font-size: 1.15rem;
+      }
+      .meta span {
+        color: var(--mut);
+        font-size: 0.9rem;
+      }
+      .del {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--bor);
+        color: #fff;
+        border: 0;
+        border-radius: 99px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+      }
+      .empty,
+      .hint {
+        color: var(--mut);
+      }
+      .hint {
+        font-size: 0.9rem;
+      }
+      /* CÓMO CONTRATAR: numeración automática con CSS counters (counter-reset / counter-increment), sin números escritos a mano. */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        counter-reset: s;
+      }
+      .step {
+        background: var(--s1);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 24px;
+      }
+      .step::before {
+        counter-increment: s;
+        content: counter(s);
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid var(--oro);
+        color: var(--oro);
+        font:
+          500 1.2rem "Bodoni Moda",
+          serif;
+        margin-bottom: 14px;
+      }
+      .step h3 {
+        font-size: 1.25rem;
+        margin-bottom: 6px;
+      }
+      .step p {
+        margin: 0;
+        color: var(--mut);
+        font-size: 0.96rem;
+      }
+      /* PRECIOS: .prices es una grilla de .price; .hot resalta la tarjeta destacada (borde dorado + fondo verde) y .pill es la etiqueta. */
+      .sub {
+        margin: 40px 0 16px;
+        font-size: 1.55rem;
+      }
+      .prices {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+      }
+      .price {
+        background: var(--s1);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        position: relative;
+      }
+      .price.hot {
+        border-color: var(--oro);
+        background: linear-gradient(180deg, var(--ver), var(--s1) 80%);
+      }
+      .price h3 {
+        font-size: 1.3rem;
+      }
+      .price .n {
+        font:
+          500 2rem "Bodoni Moda",
+          serif;
+        color: var(--oro);
+      }
+      .price .s {
+        font-size: 0.95rem;
+      }
+      .price .r {
+        color: var(--mut);
+        font-size: 0.95rem;
+        flex: 1;
+        margin: 4px 0 12px;
+      }
+      .pill {
+        position: absolute;
+        top: -12px;
+        left: 22px;
+        background: var(--oro);
+        color: #150d0d;
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 3px 12px;
+        border-radius: 99px;
+        letter-spacing: 0.08em;
+      }
+      /* .note: aviso de precios de referencia. */
+      .note {
+        background: var(--s1);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--oro);
+        border-radius: 12px;
+        padding: 14px 18px;
+        color: var(--mut);
+        max-width: 80ch;
+        margin: 0 0 8px;
+      }
+      /* CONTACTO: 2 columnas (vías de contacto + formulario). */
+      .contact {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+      }
+      @media (max-width: 760px) {
+        .contact {
+          grid-template-columns: 1fr;
+        }
+      }
+      .ways {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .way {
+        display: block;
+        background: var(--s1);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px 20px;
+        text-decoration: none;
+      }
+      .way:hover {
+        border-color: var(--oro);
+      }
+      .way b {
+        display: block;
+        font-weight: 500;
+      }
+      .way span {
+        color: var(--mut);
+        font-size: 0.92rem;
+      }
+      form {
+        background: var(--s1);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 24px;
+      }
+      label {
+        display: block;
+        font-weight: 500;
+        margin: 12px 0 6px;
+        font-size: 0.92rem;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border-radius: 10px;
+        border: 1.5px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        font: inherit;
+      }
+      /* MODALES: usan el elemento nativo <dialog> (showModal()/close()); ::backdrop oscurece el fondo. Hay 3: #info, #viewer, #adder. */
+      dialog {
+        border: 0;
+        border-radius: 20px;
+        background: var(--s2);
+        color: var(--ink);
+        padding: 26px;
+        width: min(600px, 92vw);
+        max-height: 90vh;
+      }
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.82);
+      }
+      dialog h4 {
+        font:
+          500 0.8rem "Jost",
+          sans-serif;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--mut);
+        margin: 20px 0 6px;
+      }
+      dialog ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      dialog li {
+        margin: 4px 0;
+      }
+      .mp {
+        font:
+          500 2rem "Bodoni Moda",
+          serif;
+        color: var(--oro);
+        margin: 4px 0;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+      }
+      .player {
+        aspect-ratio: 16/9;
+        width: 100%;
+        border: 0;
+        border-radius: 12px;
+        background: #000;
+        margin-top: 14px;
+      }
+      .big-img {
+        width: 100%;
+        max-height: 60vh;
+        object-fit: contain;
+        border-radius: 12px;
+        margin-top: 14px;
+      }
+      /* VISOR DE VIDEO: .phone = marco de celular para videos VERTICALES (reels, TikToks, shorts).
    El alto se limita al 66% de la pantalla y el ancho se calcula con proporción 9:19.
    .hbox = caja 16:9 para videos horizontales. El ::before dibuja la "isla" (notch) del celular. */
-.phone{--h:min(620px,66vh);position:relative;height:var(--h);width:calc(var(--h)*9/19);max-width:86vw;margin:16px auto 0;background:#000;border:10px solid #2a2122;border-radius:42px;overflow:hidden;box-shadow:0 0 0 2px #4a3d3e,0 24px 50px rgba(0,0,0,.6)}
-.phone::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:84px;height:20px;background:#000;border-radius:99px;z-index:2;pointer-events:none}
-.hbox{position:relative;width:100%;aspect-ratio:16/9;margin-top:14px;border-radius:12px;overflow:hidden;background:#000}
-.phone iframe,.phone video,.hbox iframe,.hbox video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;object-fit:contain}
-/* FOOTER. */
-footer{border-top:1px solid var(--line);padding:36px 0 44px;text-align:center;color:var(--mut);font-size:.9rem}
-footer .script{font-size:2.4rem;line-height:1;display:block;margin-bottom:8px}
-/* Accesibilidad: si el usuario pidió menos movimiento, se desactivan las animaciones. (El JS también chequea esto para el autoplay). */
-@media(prefers-reduced-motion:reduce){.track{transition:none}html{scroll-behavior:auto}}
-</style>
-</head>
-<body>
-<!-- NAVBAR: los href="#..." llevan a los id de cada <section> (navegación por anclas). -->
-<header class="top"><div class="wrap">
- <a class="logo" href="#inicio" aria-label="JESI Estudio"><b>JESI<span class="star"> ✦</span></b><small>ESTUDIO</small></a>
- <nav class="links" aria-label="Principal">
-  <a href="#inicio">Inicio</a><a href="#quien-soy">Quién soy</a><a href="#trabajos">Trabajos</a>
-  <a href="#contratar">Cómo contratar</a><a href="#precios">Precios</a><a class="cta" href="#contacto">Contacto</a>
- </nav>
-</div></header>
+      .phone {
+        --h: min(620px, 66vh);
+        position: relative;
+        height: var(--h);
+        width: calc(var(--h) * 9 / 19);
+        max-width: 86vw;
+        margin: 16px auto 0;
+        background: #000;
+        border: 10px solid #2a2122;
+        border-radius: 42px;
+        overflow: hidden;
+        box-shadow:
+          0 0 0 2px #4a3d3e,
+          0 24px 50px rgba(0, 0, 0, 0.6);
+      }
+      .phone::before {
+        content: "";
+        position: absolute;
+        top: 7px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 84px;
+        height: 20px;
+        background: #000;
+        border-radius: 99px;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .hbox {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        margin-top: 14px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #000;
+      }
+      .phone iframe,
+      .phone video,
+      .hbox iframe,
+      .hbox video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #000;
+        object-fit: contain;
+      }
+      /* FOOTER. */
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 36px 0 44px;
+        text-align: center;
+        color: var(--mut);
+        font-size: 0.9rem;
+      }
+      footer .script {
+        font-size: 2.4rem;
+        line-height: 1;
+        display: block;
+        margin-bottom: 8px;
+      }
+      /* Accesibilidad: si el usuario pidió menos movimiento, se desactivan las animaciones. (El JS también chequea esto para el autoplay). */
+      @media (prefers-reduced-motion: reduce) {
+        .track {
+          transition: none;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR: los href="#..." llevan a los id de cada <section> (navegación por anclas). -->
+    <header class="top">
+      <div class="wrap">
+        <a class="logo" href="#inicio" aria-label="JESI Estudio"
+          ><b>JESI<span class="star"> ✦</span></b
+          ><small>ESTUDIO</small></a
+        >
+        <nav class="links" aria-label="Principal">
+          <a href="#inicio">Inicio</a><a href="#quien-soy">Quién soy</a
+          ><a href="#trabajos">Trabajos</a>
+          <a href="#contratar">Cómo contratar</a><a href="#precios">Precios</a
+          ><a class="cta" href="#contacto">Contacto</a>
+        </nav>
+      </div>
+    </header>
 
-<!-- CONTENIDO PRINCIPAL -->
-<main>
-<!-- INICIO — CARRUSEL DE PROMOCIONES. Los slides y puntitos NO están escritos acá: se generan desde JS con el array PROMOS. -->
-<section id="inicio" style="padding:8px 0 0"><div class="wrap">
- <div class="car" role="region" aria-roledescription="carrusel" aria-label="Promociones">
-  <div class="track" id="track"></div>
-  <button class="arr l" id="pv" aria-label="Anterior">‹</button><button class="arr r" id="nx" aria-label="Siguiente">›</button>
-  <div class="dots" id="dots"></div>
- </div>
-</div></section>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+      <!-- INICIO — CARRUSEL DE PROMOCIONES. Los slides y puntitos NO están escritos acá: se generan desde JS con el array PROMOS. -->
+      <section id="inicio" style="padding: 8px 0 0">
+        <div class="wrap">
+          <div
+            class="car"
+            role="region"
+            aria-roledescription="carrusel"
+            aria-label="Promociones"
+          >
+            <div class="track" id="track"></div>
+            <button class="arr l" id="pv" aria-label="Anterior">‹</button
+            ><button class="arr r" id="nx" aria-label="Siguiente">›</button>
+            <div class="dots" id="dots"></div>
+          </div>
+        </div>
+      </section>
 
-<!-- QUIÉN SOY — texto estático. Reemplazá el párrafo por tu historia. -->
-<section id="quien-soy"><div class="wrap about">
- <div>
-  <p class="k">Edición de video · Páginas web · Apps móviles</p>
-  <h2 style="margin-top:14px">Hola, soy Jesi.</h2>
-  <p class="big">Edito tu contenido y creo tu presencia digital, de punta a punta.</p>
-  <p>Edito videos para redes y desarrollo páginas web y aplicaciones móviles. Trabajo de forma directa con vos: me contás tu idea y te entrego algo listo para usar. Escribí acá tu historia real, tu experiencia y por qué te eligen tus clientes.</p>
- </div>
- <div class="sv">
-  <div><b>Edición de video</b><span>Reels, TikToks y videos de YouTube</span></div>
-  <div><b>Páginas web</b><span>Landing, institucionales y tiendas online</span></div>
-  <div><b>Apps móviles</b><span>Desde apps simples, a medida</span></div>
- </div>
-</div></section>
+      <!-- QUIÉN SOY — texto estático. Reemplazá el párrafo por tu historia. -->
+      <section id="quien-soy">
+        <div class="wrap about">
+          <div>
+            <p class="k">Edición de video · Páginas web · Apps móviles</p>
+            <h2 style="margin-top: 14px">Hola, soy Jesi.</h2>
+            <p class="big">
+              Edito tu contenido y creo tu presencia digital, de punta a punta.
+            </p>
+            <p>
+              Edito videos para redes y desarrollo páginas web y aplicaciones
+              móviles. Trabajo de forma directa con vos: me contás tu idea y te
+              entrego algo listo para usar. Escribí acá tu historia real, tu
+              experiencia y por qué te eligen tus clientes.
+            </p>
+          </div>
+          <div class="sv">
+            <div>
+              <b>Edición de video</b
+              ><span>Reels, TikToks y videos de YouTube</span>
+            </div>
+            <div>
+              <b>Páginas web</b
+              ><span>Landing, institucionales y tiendas online</span>
+            </div>
+            <div>
+              <b>Apps móviles</b><span>Desde apps simples, a medida</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<!-- TRABAJOS — los botones data-f="..." son los filtros (Video/Web/App). La grilla #grid se llena desde JS (SEED + trabajos guardados). -->
-<section id="trabajos" style="padding-top:20px"><div class="wrap">
- <h2>Trabajos</h2>
- <p class="lead">Elegí una categoría y tocá cualquier trabajo para verlo.</p>
- <nav class="f" aria-label="Filtros">
-  <button class="chip" data-f="todo" aria-pressed="true">Todo</button>
-  <button class="chip" data-f="Video" aria-pressed="false">Edición de video</button>
-  <button class="chip" data-f="Web" aria-pressed="false">Páginas web</button>
-  <button class="chip" data-f="App" aria-pressed="false">Apps móviles</button>
-  <span class="sp"></span>
-  <button class="chip edit" id="editBtn">Editar portfolio</button>
- </nav>
- <div class="grid" id="grid"></div>
-</div></section>
+      <!-- TRABAJOS — los botones data-f="..." son los filtros (Video/Web/App). La grilla #grid se llena desde JS (SEED + trabajos guardados). -->
+      <section id="trabajos" style="padding-top: 20px">
+        <div class="wrap">
+          <h2>Trabajos</h2>
+          <p class="lead">
+            Elegí una categoría y tocá cualquier trabajo para verlo.
+          </p>
+          <nav class="f" aria-label="Filtros">
+            <button class="chip" data-f="todo" aria-pressed="true">Todo</button>
+            <button class="chip" data-f="Video" aria-pressed="false">
+              Edición de video
+            </button>
+            <button class="chip" data-f="Web" aria-pressed="false">
+              Páginas web
+            </button>
+            <button class="chip" data-f="App" aria-pressed="false">
+              Apps móviles
+            </button>
+            <span class="sp"></span>
+            <button class="chip edit" id="editBtn">Editar portfolio</button>
+          </nav>
+          <div class="grid" id="grid"></div>
+        </div>
+      </section>
 
-<!-- CÓMO CONTRATAR — 4 pasos estáticos (la numeración la pone el CSS). -->
-<section id="contratar"><div class="wrap">
- <h2>Cómo contratar</h2>
- <p class="lead">Un proceso simple, de la primera consulta a la entrega.</p>
- <div class="steps">
-  <div class="step"><h3>Contame tu idea</h3><p>Escribime por WhatsApp o completá el formulario con lo que necesitás.</p></div>
-  <div class="step"><h3>Recibís la propuesta</h3><p>Te paso alcance, plazo y precio, sin sorpresas.</p></div>
-  <div class="step"><h3>Confirmamos y arrancamos</h3><p>Acordamos forma de pago y fecha de entrega, y empiezo a trabajar.</p></div>
-  <div class="step"><h3>Revisión y entrega</h3><p>Ajustamos lo que haga falta y te entrego todo listo para usar.</p></div>
- </div>
-</div></section>
+      <!-- CÓMO CONTRATAR — 4 pasos estáticos (la numeración la pone el CSS). -->
+      <section id="contratar">
+        <div class="wrap">
+          <h2>Cómo contratar</h2>
+          <p class="lead">
+            Un proceso simple, de la primera consulta a la entrega.
+          </p>
+          <div class="steps">
+            <div class="step">
+              <h3>Contame tu idea</h3>
+              <p>
+                Escribime por WhatsApp o completá el formulario con lo que
+                necesitás.
+              </p>
+            </div>
+            <div class="step">
+              <h3>Recibís la propuesta</h3>
+              <p>Te paso alcance, plazo y precio, sin sorpresas.</p>
+            </div>
+            <div class="step">
+              <h3>Confirmamos y arrancamos</h3>
+              <p>
+                Acordamos forma de pago y fecha de entrega, y empiezo a
+                trabajar.
+              </p>
+            </div>
+            <div class="step">
+              <h3>Revisión y entrega</h3>
+              <p>
+                Ajustamos lo que haga falta y te entrego todo listo para usar.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<!-- PRECIOS — los contenedores id="p-<grupo>" se llenan desde JS con el array ITEMS. El id debe coincidir EXACTO con el campo g de cada item. -->
-<section id="precios"><div class="wrap">
- <h2>Precios</h2>
- <p class="lead">Tocá "Más info" en cada servicio para ver qué incluye y sus condiciones.</p>
- <p class="note">Los precios son de referencia: cada proyecto depende de lo que necesite. La excepción son las webs, que tienen el precio indicado según lo que incluyen: la landing es una página y la web institucional llega hasta 5 páginas.</p>
- <h3 class="sub">Edición de video</h3><div class="prices" id="p-Edición de video"></div>
- <h3 class="sub">Páginas web</h3><div class="prices" id="p-Páginas web"></div>
- <h3 class="sub">Apps móviles</h3><div class="prices" id="p-Apps móviles"></div>
-</div></section>
+      <!-- PRECIOS — los contenedores id="p-<grupo>" se llenan desde JS con el array ITEMS. El id debe coincidir EXACTO con el campo g de cada item. -->
+      <section id="precios">
+        <div class="wrap">
+          <h2>Precios</h2>
+          <p class="lead">
+            Tocá "Más info" en cada servicio para ver qué incluye y sus
+            condiciones.
+          </p>
+          <p class="note">
+            Los precios son de referencia: cada proyecto depende de lo que
+            necesite. La excepción son las webs, que tienen el precio indicado
+            según lo que incluyen: la landing es una página y la web
+            institucional llega hasta 5 páginas.
+          </p>
+          <h3 class="sub">Edición de video</h3>
+          <div class="prices" id="p-Edición de video"></div>
+          <h3 class="sub">Páginas web</h3>
+          <div class="prices" id="p-Páginas web"></div>
+          <h3 class="sub">Apps móviles</h3>
+          <div class="prices" id="p-Apps móviles"></div>
+        </div>
+      </section>
 
-<!-- CONTACTO — el <select id="cs"> lo preselecciona la función pick(); el formulario no usa backend: arma un link de WhatsApp. -->
-<section id="contacto"><div class="wrap">
- <h2>Contacto</h2>
- <p class="lead">Por acá respondo consultas y presupuestos. Mi Instagram tiene de todo un poco; para trabajar juntos, escribime por estos medios.</p>
- <div class="contact">
-  <div class="ways">
-   <a class="way" id="wa" target="_blank" rel="noopener"><b>WhatsApp</b><span>La forma más rápida de cotizar</span></a>
-   <a class="way" href="mailto:tuemail@ejemplo.com"><b>Email</b><span>tuemail@ejemplo.com</span></a>
-   <a class="way" href="https://www.instagram.com/jesiestudio_/" target="_blank" rel="noopener"><b>Instagram</b><span>@jesiestudio_ · mensaje directo</span></a>
-  </div>
-  <form id="cf">
-   <label for="cn">Nombre</label><input id="cn" required>
-   <label for="cs">Servicio a cotizar</label>
-   <select id="cs"><option>Edición de video</option><option>Landing page</option><option>Web institucional</option><option>Tienda online</option><option>Mantenimiento web</option><option>App móvil</option><option>Otro</option></select>
-   <label for="cm">Mensaje</label><textarea id="cm" rows="4" placeholder="Contame brevemente qué necesitás"></textarea>
-   <div class="row"><button class="btn" type="submit">Enviar por WhatsApp</button></div>
-  </form>
- </div>
-</div></section>
-</main>
-<!-- FOOTER -->
-<footer><div class="wrap"><span class="script">Hagamos algo lindo juntos.</span>© 2026 JESI Estudio · Todos los derechos reservados.</div></footer>
+      <!-- CONTACTO — el <select id="cs"> lo preselecciona la función pick(); el formulario no usa backend: arma un link de WhatsApp. -->
+      <section id="contacto">
+        <div class="wrap">
+          <h2>Contacto</h2>
+          <p class="lead">
+            Por acá respondo consultas y presupuestos. Mi Instagram tiene de
+            todo un poco; para trabajar juntos, escribime por estos medios.
+          </p>
+          <div class="contact">
+            <div class="ways">
+              <a class="way" id="wa" target="_blank" rel="noopener"
+                ><b>WhatsApp</b><span>La forma más rápida de cotizar</span></a
+              >
+              <a class="way" href="mailto:tuemail@ejemplo.com"
+                ><b>Email</b><span>tuemail@ejemplo.com</span></a
+              >
+              <a
+                class="way"
+                href="https://www.instagram.com/jesiestudio_/"
+                target="_blank"
+                rel="noopener"
+                ><b>Instagram</b><span>@jesiestudio_ · mensaje directo</span></a
+              >
+            </div>
+            <form id="cf">
+              <label for="cn">Nombre</label><input id="cn" required />
+              <label for="cs">Servicio a cotizar</label>
+              <select id="cs">
+                <option>Edición de video</option>
+                <option>Landing page</option>
+                <option>Web institucional</option>
+                <option>Tienda online</option>
+                <option>Mantenimiento web</option>
+                <option>App móvil</option>
+                <option>Otro</option>
+              </select>
+              <label for="cm">Mensaje</label
+              ><textarea
+                id="cm"
+                rows="4"
+                placeholder="Contame brevemente qué necesitás"
+              ></textarea>
+              <div class="row">
+                <button class="btn" type="submit">Enviar por WhatsApp</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- FOOTER -->
+    <footer>
+      <div class="wrap">
+        <span class="script">Hagamos algo lindo juntos.</span>© 2026 JESI
+        Estudio · Todos los derechos reservados.
+      </div>
+    </footer>
 
-<!-- MODAL 1 (#info): detalle de un servicio de precios (se llena en openInfo). -->
-<dialog id="info"><h2 id="it" style="font-size:1.8rem"></h2><div class="mp" id="ip"></div><div id="ib"></div>
-<div class="row"><button class="btn" id="ic">Consultar este servicio</button><button class="btn g" id="ix">Cerrar</button></div></dialog>
-<!-- MODAL 2 (#viewer): visor de un trabajo del portfolio (YouTube embebido o imagen). -->
-<dialog id="viewer"><h2 id="vt" style="font-size:1.6rem"></h2><div id="vb"></div>
-<div class="row"><a class="btn" id="vl" target="_blank" rel="noopener">Ver en la plataforma</a><button class="btn g" id="vc">Cerrar</button></div></dialog>
-<!-- MODAL 3 (#adder): formulario para agregar un trabajo (modo edición). Se guarda en localStorage. -->
-<dialog id="adder"><h2 style="font-size:1.6rem">Agregar trabajo</h2>
-<label for="aT">Título</label><input id="aT">
-<label for="aC">Categoría</label><select id="aC"><option value="Video">Edición de video</option><option value="Web">Páginas web</option><option value="App">Apps móviles</option></select>
-<label for="aU">Link (YouTube, TikTok, Instagram, sitio web) o ruta de un video propio</label><input id="aU" placeholder="https://...  ·  o  videos/mi-reel.mp4">
-<label for="aI">Portada (imagen opcional)</label><input id="aI" type="file" accept="image/*">
-<p class="hint">Lo que agregues acá se guarda solo en este navegador. Para publicarlo para todos, sumalo a la lista SEED del código.</p>
-<div class="row"><button class="btn" id="aS">Guardar trabajo</button><button class="btn g" id="aX">Cancelar</button></div></dialog>
+    <!-- MODAL 1 (#info): detalle de un servicio de precios (se llena en openInfo). -->
+    <dialog id="info">
+      <h2 id="it" style="font-size: 1.8rem"></h2>
+      <div class="mp" id="ip"></div>
+      <div id="ib"></div>
+      <div class="row">
+        <button class="btn" id="ic">Consultar este servicio</button
+        ><button class="btn g" id="ix">Cerrar</button>
+      </div>
+    </dialog>
+    <!-- MODAL 2 (#viewer): visor de un trabajo del portfolio (YouTube embebido o imagen). -->
+    <dialog id="viewer">
+      <h2 id="vt" style="font-size: 1.6rem"></h2>
+      <div id="vb"></div>
+      <div class="row">
+        <a class="btn" id="vl" target="_blank" rel="noopener"
+          >Ver en la plataforma</a
+        ><button class="btn g" id="vc">Cerrar</button>
+      </div>
+    </dialog>
+    <!-- MODAL 3 (#adder): formulario para agregar un trabajo (modo edición). Se guarda en localStorage. -->
+    <dialog id="adder">
+      <h2 style="font-size: 1.6rem">Agregar trabajo</h2>
+      <label for="aT">Título</label><input id="aT" />
+      <label for="aC">Categoría</label
+      ><select id="aC">
+        <option value="Video">Edición de video</option>
+        <option value="Web">Páginas web</option>
+        <option value="App">Apps móviles</option>
+      </select>
+      <label for="aU"
+        >Link (YouTube, TikTok, Instagram, sitio web) o ruta de un video
+        propio</label
+      ><input id="aU" placeholder="https://...  ·  o  videos/mi-reel.mp4" />
+      <label for="aI">Portada (imagen opcional)</label
+      ><input id="aI" type="file" accept="image/*" />
+      <p class="hint">
+        Lo que agregues acá se guarda solo en este navegador. Para publicarlo
+        para todos, sumalo a la lista SEED del código.
+      </p>
+      <div class="row">
+        <button class="btn" id="aS">Guardar trabajo</button
+        ><button class="btn g" id="aX">Cancelar</button>
+      </div>
+    </dialog>
 
-<!-- JAVASCRIPT — vanilla, sin librerías. Estructura:
+    <!-- JAVASCRIPT — vanilla, sin librerías. Estructura:
        1) datos editables  2) helpers  3) carrusel  4) precios+modal  5) contacto  6) portfolio (filtros, visor, edición). -->
-<script>
-// ===== EDITÁ ESTOS DATOS =====
-// WhatsApp: número con código de país, SIN + ni espacios (ej. Argentina móvil: 549 + código de área + número).
-var WA="5491100000000"; // tu número con código de país, sin + ni espacios
-// PROMOS (carrusel). Campos: tag (etiqueta) | t (título) | p (texto) | big (texto grande del arco) | bs (texto bajo el arco)
-// s (servicio que se preselecciona en el formulario; debe existir como <option>) | b (texto del botón).
-var PROMOS=[
- {tag:"El combo más elegido",t:"12 reels con 25% de descuento.",p:"Edición completa, portada con tu marca y descripción lista para publicar. Los usás durante el mes.",big:"25% OFF",bs:"Ahorrás $60.000",s:"Edición de video",b:"Quiero este combo"},
- {tag:"Combo de edición",t:"8 reels con 15% de descuento.",p:"Edición completa, portada con tu marca y descripción lista para publicar. Los usás durante el mes.",big:"15% OFF",bs:"Ahorrás $24.000",s:"Edición de video",b:"Quiero este combo"}
-];
-// SEED = trabajos permanentes del portfolio (los ve todo el mundo).
-// c: "Video" | "Web" | "App" | u: link | cover: imagen en base64 (o "" para usar degradé).
-// u acepta: link de YouTube / TikTok / Instagram (se reproduce DENTRO de la web) o la ruta a un video propio, ej. "videos/reel1.mp4".
-// o (opcional): "v" fuerza marco de celular, "h" fuerza horizontal. Para TikTok usá el link completo (con /video/NUMERO), no el corto vm.tiktok.com.
-var SEED=[
- {t:"Reel de prueba",c:"Video",u:"videos/s.mp4",cover:"videos/s.png"}, // rutas RELATIVAS al index.html, siempre con "/" (nunca "\")
- {t:"Reel de ejemplo",c:"Video",u:"https://www.youtube.com/watch?v=dQw4w9WgXcQ",cover:""},
- {t:"TikTok de ejemplo",c:"Video",u:"https://www.tiktok.com/@usuario/video/123",cover:""},
- {t:"Reel de Instagram de ejemplo",c:"Video",u:"https://www.instagram.com/reel/XYZ789/",cover:""},
- {t:"Web de ejemplo",c:"Web",u:"https://ejemplo.com",cover:""},
- {t:"App de ejemplo",c:"App",u:"https://ejemplo.com/app",cover:""}
-];
-// g = grupo · pr = precio · sv = subtítulo · r = resumen corto · d = descripción del modal
-// inc = "Incluye" · cond = "Condiciones" (listas; dejá [] para ocultarlas) · s = servicio en el formulario
-var ITEMS=[
- {g:"Edición de video",n:"Reel suelto",pr:"$20.000",sv:"Por video",r:"Edición completa, portada y descripción.",
-  d:"Un reel editado de principio a fin, listo para publicar en Instagram, TikTok o YouTube.",
-  inc:["Edición completa del video","Diseño de portada personalizada con tu marca","Descripción optimizada lista para publicar"],cond:[],s:"Edición de video"},
- {g:"Edición de video",n:"Combo x8",pr:"$136.000",sv:"$17.000 c/u en vez de $20.000",r:"8 reels con precio por unidad más bajo.",
-  d:"Un pack de 8 videos para ahorrar: cada reel queda a $17.000 en lugar de $20.000.",
-  inc:["8 videos con edición completa","Portada personalizada con tu marca en cada uno","Descripción optimizada lista para publicar","Ahorro de $24.000 frente a 8 reels sueltos"],
-  cond:["Los combos se pueden usar durante el mes: no hace falta pasarme todos los videos juntos."],s:"Edición de video"},
- {g:"Edición de video",n:"Combo x12",pr:"$180.000",sv:"$15.000 c/u",hot:"EL MÁS ELEGIDO",r:"12 reels, el mejor precio por unidad.",
-  d:"Un pack de 12 videos: cada reel queda a $15.000 en lugar de $20.000. Es el combo más elegido.",
-  inc:["12 videos con edición completa","Portada personalizada con tu marca en cada uno","Descripción optimizada lista para publicar","Ahorro de $60.000 frente a 12 reels sueltos"],
-  cond:["Los combos se pueden usar durante el mes: no hace falta pasarme todos los videos juntos."],s:"Edición de video"},
- {g:"Páginas web",n:"Landing page",pr:"$380.000",sv:"1 página",r:"Una página, ideal para presentar tu servicio o producto.",
-  d:"Una web de una sola página, pensada para presentar tu servicio, producto o proyecto y recibir consultas.",
-  inc:["1 página"],cond:["Precio fijo por 1 página. Si necesitás más páginas, corresponde la web institucional."],s:"Landing page"},
- {g:"Páginas web",n:"Web institucional",pr:"$650.000",sv:"Hasta 5 páginas",r:"Hasta 5 páginas para presentar tu negocio.",
-  d:"Una web con varias secciones para mostrar tu negocio o profesión, por ejemplo: inicio, nosotros, servicios y contacto.",
-  inc:["Hasta 5 páginas"],cond:["Precio fijo hasta 5 páginas."],s:"Web institucional"},
- {g:"Páginas web",n:"Tienda online",pr:"A cotizar",sv:"Según productos y pagos",r:"El precio depende de tu proyecto.",
-  d:"Una tienda para vender online. El precio depende de cuántos productos vas a cargar y de los medios de pago que necesites.",
-  inc:[],cond:["Precio de referencia: cada tienda se cotiza según el proyecto."],s:"Tienda online"},
- {g:"Páginas web",n:"Mantenimiento mensual",pr:"$50.000",sv:"Por mes",r:"Cuidado y soporte de tu web todos los meses.",
-  d:"Un servicio mensual para que tu web se mantenga al día y tengas a quién consultar.",
-  inc:["Actualizaciones","Copias de seguridad","Soporte técnico"],cond:[],s:"Mantenimiento web"},
- {g:"Apps móviles",n:"App móvil",pr:"Desde USD 1.500",sv:"App simple",r:"Precio de referencia: depende de tu proyecto.",
-  d:"Para una app simple con funciones básicas. El precio final depende de las funciones que necesites, de si es para Android, iOS o ambos, y de si requiere servidor.",
-  inc:[],cond:["Precio de referencia: cada app se cotiza según el proyecto."],s:"App móvil"}
-];
-// =============================
-// CL: códigos de categoría → nombre visible. Si agregás una categoría, sumala acá, en los chips del HTML y en el <select id="aC".
-var CL={Video:"Edición de video",Web:"Páginas web",App:"Apps móviles"};
-// GR/BG: degradés de fondo (portadas sin imagen según plataforma, y slides del carrusel por posición).
-var GR={Video:"linear-gradient(145deg,#150f10,#7a1f2b)",TikTok:"linear-gradient(145deg,#150f10,#5a1520)",Instagram:"linear-gradient(145deg,#3a0f18,#7a1f2b)",YouTube:"linear-gradient(145deg,#12251c,#7a1f2b)",Link:"linear-gradient(145deg,#12251c,#1f3a2d)"};
-var BG=["linear-gradient(120deg,#3a0f18,#7a1f2b)","linear-gradient(120deg,#12251c,#1f3a2d)","linear-gradient(120deg,#1a0f1f,#4a1d3a)","linear-gradient(120deg,#0e1424,#1b2848)"];
-// esc(): escapa HTML antes de usar innerHTML con texto dinámico (evita inyección de código).
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-// Atajo: $("id") = document.getElementById("id").
-function $(i){return document.getElementById(i)}
-// pick(servicio): preselecciona el servicio en el formulario y salta a #contacto. Lo usan carrusel y modal de precios.
-function pick(s){$("cs").value=s;location.hash="#contacto"}
-// carrusel
-// Estado del carrusel: cur = slide actual, timer = intervalo del autoplay, reduce = ¿el usuario pidió menos movimiento?
-var cur=0,timer,reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
-// Genera los slides desde PROMOS. El primero usa <h1> (SEO: un solo h1 por página), el resto <h2>.
-$("track").innerHTML=PROMOS.map(function(x,i){return '<div class="slide" style="background:'+BG[i%4]+'" aria-label="'+(i+1)+' de '+PROMOS.length+'"><div class="tx"><span class="k">'+esc(x.tag)+'</span>'+(i?'<h2>':'<h1>')+esc(x.t)+(i?'</h2>':'</h1>')+'<p>'+esc(x.p)+'</p><button class="btn c" data-s="'+esc(x.s)+'">'+esc(x.b)+'</button></div><div class="arch"><span class="star">✦</span><div class="big">'+esc(x.big)+'</div><span>'+esc(x.bs)+'</span></div></div>'}).join("");
-$("dots").innerHTML=PROMOS.map(function(x,i){return '<button aria-label="Ir a promo '+(i+1)+'" data-i="'+i+'"></button>'}).join("");
-// go(i): muestra el slide i (con vuelta al inicio/final) moviendo el track con translateX y actualizando los puntitos.
-function go(i){cur=(i+PROMOS.length)%PROMOS.length;$("track").style.transform="translateX(-"+cur*100+"%)";document.querySelectorAll("#dots button").forEach(function(d,k){d.setAttribute("aria-current",k===cur)})}
-// auto(): (re)inicia el autoplay cada 6 s; no corre si reduce=true. Se reinicia al interactuar.
-function auto(){clearInterval(timer);if(!reduce)timer=setInterval(function(){go(cur+1)},6000)}
-$("pv").onclick=function(){go(cur-1);auto()};$("nx").onclick=function(){go(cur+1);auto()};
-document.querySelectorAll("#dots button").forEach(function(d){d.onclick=function(){go(+d.dataset.i);auto()}});
-document.querySelectorAll(".slide [data-s]").forEach(function(b){b.onclick=function(){pick(b.dataset.s)}});
-go(0);auto();
-// precios + modal de info
-// Genera una tarjeta .price por cada item y la inserta en su grupo (#p-<g>). El botón abre el modal con openInfo(i).
-ITEMS.forEach(function(x,i){var c=document.createElement("div");c.className="price"+(x.hot?" hot":"");
- c.innerHTML=(x.hot?'<span class="pill">'+x.hot+'</span>':'')+'<h3>'+x.n+'</h3><div class="n">'+x.pr+'</div><div class="s">'+x.sv+'</div><div class="r">'+x.r+'</div><button class="btn'+(x.hot?'':' g')+'">Más info</button>';
- c.querySelector("button").onclick=function(){openInfo(i)};$("p-"+x.g).appendChild(c)});
-// curItem: item abierto en el modal (lo usa el botón "Consultar" para saber qué servicio preseleccionar).
-var curItem=null;
-// lst(titulo, array): devuelve un bloque <ul> con título, o "" si el array está vacío (por eso cond:[] oculta la sección).
-function lst(t,a){return a&&a.length?'<h4>'+t+'</h4><ul>'+a.map(function(l){return '<li>'+esc(l)+'</li>'}).join("")+'</ul>':""}
-// openInfo(i): llena el modal #info con los datos de ITEMS[i] y lo abre con showModal().
-function openInfo(i){var x=ITEMS[i];curItem=x;$("it").textContent=x.n;$("ip").textContent=x.pr+(x.sv?" · "+x.sv:"");
- $("ib").innerHTML='<p style="color:var(--mut);margin:8px 0 0">'+esc(x.d)+'</p>'+lst("Qué incluye",x.inc)+lst("Condiciones",x.cond);$("info").showModal()}
-$("ix").onclick=function(){$("info").close()};
-$("ic").onclick=function(){$("info").close();pick(curItem.s)};
-// contacto
-// Link directo a WhatsApp.
-$("wa").href="https://wa.me/"+WA;
-// Formulario sin backend: arma el mensaje y abre wa.me con ?text=... (encodeURIComponent). preventDefault evita recargar la página.
-$("cf").onsubmit=function(e){e.preventDefault();var m="Hola, soy "+$("cn").value+". Quiero cotizar: "+$("cs").value+". "+$("cm").value;window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(m),"_blank")};
-// portfolio
-// PORTFOLIO. KEY = clave de localStorage donde se guardan los trabajos agregados desde el modo edición (solo en ESE navegador).
-var KEY="jesi_extra_v2",extra=[],edit=false,filter="todo";
-try{extra=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){extra=[]}
-// save(): persiste el array extra en localStorage (try/catch: puede fallar si está lleno o bloqueado).
-function save(){try{localStorage.setItem(KEY,JSON.stringify(extra))}catch(e){alert("No se pudo guardar (imagen muy pesada).")}}
-// plat(url): detecta la plataforma por el dominio (TikTok/Instagram/YouTube/Link) para la insignia y el degradé.
-function plat(u){u=u.toLowerCase();if(/\.(mp4|webm|mov|m4v)(\?.*)?$/.test(u))return "Video";return u.includes("tiktok")?"TikTok":u.includes("instagram")?"Instagram":(u.includes("youtube")||u.includes("youtu.be"))?"YouTube":"Link"}
-// ytId(url): extrae el ID de 11 caracteres de un link de YouTube (watch, youtu.be, shorts, embed). null si no es YouTube.
-function ytId(u){var m=u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);return m?m[1]:null}
-// all(): une SEED (fijos, src "s") + extra (guardados, src "e") y guarda el índice i para poder borrarlos.
-function all(){return SEED.map(function(x,i){return Object.assign({},x,{src:"s",i:i})}).concat(extra.map(function(x,i){return Object.assign({},x,{src:"e",i:i})}))}
-// render(): dibuja la grilla según el filtro actual. Solo los trabajos de src "e" muestran el botón × en modo edición.
-// orient(x): "v" (vertical) u "h" (horizontal) para la forma de la tarjeta.
-//   Prioridad: campo "o" del trabajo > tipo de link (TikTok/Instagram/Shorts = v, YouTube normal = h, resto = h) > null (video propio: se mide al cargar).
-function orient(x){if(x.o)return x.o;var e=embedInfo(x.u);if(e&&e.k==="iframe")return e.v?"v":"h";if(e&&e.k==="video")return null;return"h"}
-function render(){
- var g=$("grid"),list=all().filter(function(x){return CL[x.c]&&(filter==="todo"||x.c===filter)});g.innerHTML="";
- if(!list.length){g.innerHTML='<p class="empty">Todavía no hay trabajos en esta categoría.</p>';return}
- list.forEach(function(x){
-  var p=plat(x.u),b=document.createElement("div");b.className="item";
-  var isV=!x.cover&&p==="Video",cv=x.cover?'<img class="cover" alt="" src="'+x.cover+'">':isV?'<video class="cover" src="'+esc(x.u)+'#t=0.5" muted playsinline preload="metadata"></video>':'<div class="cover" style="background:'+GR[p]+'">'+esc(x.t)+'</div>';
-  b.innerHTML='<button class="card" aria-label="Abrir '+esc(x.t)+'"><div class="cw">'+cv+'</div><span class="badge">'+p+'</span><div class="meta"><h3>'+esc(x.t)+'</h3><span>'+CL[x.c]+'</span></div></button>';
-  b.firstChild.onclick=function(){show(x)};
-  // Forma de la portada según orientación. Si es video propio (o===null) se arranca vertical y se corrige al leer su tamaño real.
-  var cw=b.querySelector(".cw"),o=orient(x);cw.className="cw"+(o==="h"?"":" v");
-  if(o===null){var pr=document.createElement("video");pr.preload="metadata";pr.onloadedmetadata=function(){cw.className="cw"+(pr.videoHeight>pr.videoWidth?" v":"")};pr.src=x.u}
-  if(edit&&x.src==="e"){var d=document.createElement("button");d.className="del";d.textContent="×";d.setAttribute("aria-label","Eliminar");d.onclick=function(){extra.splice(x.i,1);save();render()};b.appendChild(d)}
-  g.appendChild(b)})}
-// embedInfo(url): decide CÓMO mostrar un link dentro de la web.
-//   TikTok / Instagram / YouTube -> iframe con la URL de "embed" oficial | archivo .mp4/.webm -> <video> propio | otro -> null
-//   v = true si es vertical (marco de celular). Si es null (video propio) se decide leyendo el tamaño real del video.
-function embedInfo(u){
- var m;
- if(m=u.match(/tiktok\.com\/.*?\/video\/(\d+)/))return{k:"iframe",src:"https://www.tiktok.com/embed/v2/"+m[1],v:true};
- if(m=u.match(/instagram\.com\/(?:[\w.]+\/)?(reel|reels|p|tv)\/([\w-]+)/))return{k:"iframe",src:"https://www.instagram.com/"+(m[1]==="reels"?"reel":m[1])+"/"+m[2]+"/embed",v:true};
- if(m=u.match(/youtube\.com\/shorts\/([\w-]{11})/))return{k:"iframe",src:"https://www.youtube-nocookie.com/embed/"+m[1],v:true};
- if(m=ytId(u))return{k:"iframe",src:"https://www.youtube-nocookie.com/embed/"+m,v:false};
- if(/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u))return{k:"video",src:u,v:null};
- return null}
-// show(x): abre el visor. Vertical -> dentro de un "celular" (.phone); horizontal -> caja 16:9 (.hbox).
-//   x.o ("v"/"h") fuerza la orientación. Si no se puede embeber, muestra la portada o un aviso + botón a la plataforma.
-function show(x){var e=embedInfo(x.u),b=$("vb");$("vt").textContent=x.t;$("vl").href=x.u;
- $("vl").style.display=(e&&e.k==="video")?"none":"";$("vl").textContent=plat(x.u)==="Link"?"Abrir enlace":"Abrir en "+plat(x.u);
- if(!e){b.innerHTML=x.cover?'<img class="big-img" alt="'+esc(x.t)+'" src="'+x.cover+'">':'<p class="hint">Este trabajo se ve mejor en su plataforma original. Tocá el botón para abrirlo.</p>'}
- else if(e.k==="video"){b.innerHTML='<div class="phone" id="vf"><video src="'+esc(e.src)+'" controls playsinline></video></div>';
-  var vd=b.querySelector("video");vd.onloadedmetadata=function(){var h=x.o?x.o==="h":vd.videoWidth>=vd.videoHeight;$("vf").className=h?"hbox":"phone"}}
- else{var vert=x.o?x.o==="v":e.v;b.innerHTML='<div class="'+(vert?"phone":"hbox")+'"><iframe src="'+esc(e.src)+'" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy" title="'+esc(x.t)+'"></iframe></div><p class="hint" style="text-align:center">¿No se ve? Abrilo con el botón de abajo.</p>'}
- $("viewer").showModal()}
-// Al cerrar el visor (botón o tecla Esc) se vacía el contenido para que el video deje de sonar.
-$("viewer").addEventListener("close",function(){$("vb").innerHTML=""});
-$("vc").onclick=function(){$("vb").innerHTML="";$("viewer").close()};
-// Filtros: al hacer click guarda el filtro, actualiza aria-pressed y vuelve a renderizar.
-document.querySelectorAll("[data-f]").forEach(function(c){c.onclick=function(){filter=c.dataset.f;document.querySelectorAll("[data-f]").forEach(function(o){o.setAttribute("aria-pressed",o===c)});render()}});
-// Modo edición: 1er click activa el modo (muestra ×), los siguientes abren el modal para agregar.
-$("editBtn").onclick=function(){var eb=$("editBtn");if(!edit){edit=true;eb.textContent="Agregar trabajo";render();return}$("adder").showModal()};
-$("aX").onclick=function(){$("adder").close()};
-// shrink(file, cb): redimensiona la imagen a máx. 700px con <canvas> y la pasa a JPEG base64 (calidad .8) para no llenar localStorage.
-function shrink(f,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var s=Math.min(1,700/im.width),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.8))};im.src=r.result};r.readAsDataURL(f)}
-// Guardar trabajo: valida título y link, procesa la portada (si hay), lo agrega a extra, guarda y re-renderiza.
-$("aS").onclick=function(){var t=$("aT").value.trim(),u=$("aU").value.trim(),f=$("aI").files[0];if(!t||!u){alert("Completá el título y el link.");return}
- function done(c){extra.push({t:t,c:$("aC").value,u:u,cover:c||""});save();render();$("adder").close();["aT","aU","aI"].forEach(function(i){$(i).value=""})}
- f?shrink(f,done):done("")};
-// Render inicial al cargar la página.
-render();
-</script>
-</body>
+    <script>
+      // ===== EDITÁ ESTOS DATOS =====
+      // WhatsApp: número con código de país, SIN + ni espacios (ej. Argentina móvil: 549 + código de área + número).
+      var WA = "5491100000000"; // tu número con código de país, sin + ni espacios
+      // PROMOS (carrusel). Campos: tag (etiqueta) | t (título) | p (texto) | big (texto grande del arco) | bs (texto bajo el arco)
+      // s (servicio que se preselecciona en el formulario; debe existir como <option>) | b (texto del botón).
+      var PROMOS = [
+        {
+          tag: "El combo más elegido",
+          t: "12 reels con 25% de descuento.",
+          p: "Edición completa, portada con tu marca y descripción lista para publicar. Los usás durante el mes.",
+          big: "25% OFF",
+          bs: "Ahorrás $60.000",
+          s: "Edición de video",
+          b: "Quiero este combo",
+        },
+        {
+          tag: "Combo de edición",
+          t: "8 reels con 15% de descuento.",
+          p: "Edición completa, portada con tu marca y descripción lista para publicar. Los usás durante el mes.",
+          big: "15% OFF",
+          bs: "Ahorrás $24.000",
+          s: "Edición de video",
+          b: "Quiero este combo",
+        },
+      ];
+      // SEED = trabajos permanentes del portfolio (los ve todo el mundo).
+      // c: "Video" | "Web" | "App" | u: link | cover: imagen en base64 (o "" para usar degradé).
+      // u acepta: link de YouTube / TikTok / Instagram (se reproduce DENTRO de la web) o la ruta a un video propio, ej. "videos/reel1.mp4".
+      // o (opcional): "v" fuerza marco de celular, "h" fuerza horizontal. Para TikTok usá el link completo (con /video/NUMERO), no el corto vm.tiktok.com.
+      var SEED = [
+        {
+          t: "Reel de prueba",
+          c: "Video",
+          u: "https://www.instagram.com/p/DW6qVGXEe3P/",
+          cover: "videos/si.png",
+        }, // rutas RELATIVAS al index.html, siempre con "/" (nunca "\")
+        {
+          t: "Edición básica de video largo",
+          c: "Video",
+          u: "https://www.youtube.com/watch?v=4IDb4MBiMgE",
+          cover: "videos/alex.png",
+        },
+        {
+          t: "TikTok de ejemplo",
+          c: "Video",
+          u: "https://www.tiktok.com/@sofia.fernandezdal/video/7632463666327080200",
+          cover: "videos/s.png",
+        },
+        {
+          t: "Reel de Instagram de ejemplo",
+          c: "Video",
+          u: "https://www.instagram.com/reel/XYZ789/",
+          cover: "",
+        },
+        { t: "Web de ejemplo", c: "Web", u: "https://ejemplo.com", cover: "" },
+        {
+          t: "App de ejemplo",
+          c: "App",
+          u: "https://ejemplo.com/app",
+          cover: "",
+        },
+      ];
+      // g = grupo · pr = precio · sv = subtítulo · r = resumen corto · d = descripción del modal
+      // inc = "Incluye" · cond = "Condiciones" (listas; dejá [] para ocultarlas) · s = servicio en el formulario
+      var ITEMS = [
+        {
+          g: "Edición de video",
+          n: "Reel suelto",
+          pr: "$20.000",
+          sv: "Por video",
+          r: "Edición completa, portada y descripción.",
+          d: "Un reel editado de principio a fin, listo para publicar en Instagram, TikTok o YouTube.",
+          inc: [
+            "Edición completa del video",
+            "Diseño de portada personalizada con tu marca",
+            "Descripción optimizada lista para publicar",
+          ],
+          cond: [],
+          s: "Edición de video",
+        },
+        {
+          g: "Edición de video",
+          n: "Combo x8",
+          pr: "$136.000",
+          sv: "$17.000 c/u en vez de $20.000",
+          r: "8 reels con precio por unidad más bajo.",
+          d: "Un pack de 8 videos para ahorrar: cada reel queda a $17.000 en lugar de $20.000.",
+          inc: [
+            "8 videos con edición completa",
+            "Portada personalizada con tu marca en cada uno",
+            "Descripción optimizada lista para publicar",
+            "Ahorro de $24.000 frente a 8 reels sueltos",
+          ],
+          cond: [
+            "Los combos se pueden usar durante el mes: no hace falta pasarme todos los videos juntos.",
+          ],
+          s: "Edición de video",
+        },
+        {
+          g: "Edición de video",
+          n: "Combo x12",
+          pr: "$180.000",
+          sv: "$15.000 c/u",
+          hot: "EL MÁS ELEGIDO",
+          r: "12 reels, el mejor precio por unidad.",
+          d: "Un pack de 12 videos: cada reel queda a $15.000 en lugar de $20.000. Es el combo más elegido.",
+          inc: [
+            "12 videos con edición completa",
+            "Portada personalizada con tu marca en cada uno",
+            "Descripción optimizada lista para publicar",
+            "Ahorro de $60.000 frente a 12 reels sueltos",
+          ],
+          cond: [
+            "Los combos se pueden usar durante el mes: no hace falta pasarme todos los videos juntos.",
+          ],
+          s: "Edición de video",
+        },
+        {
+          g: "Páginas web",
+          n: "Landing page",
+          pr: "$380.000",
+          sv: "1 página",
+          r: "Una página, ideal para presentar tu servicio o producto.",
+          d: "Una web de una sola página, pensada para presentar tu servicio, producto o proyecto y recibir consultas.",
+          inc: ["1 página"],
+          cond: [
+            "Precio fijo por 1 página. Si necesitás más páginas, corresponde la web institucional.",
+          ],
+          s: "Landing page",
+        },
+        {
+          g: "Páginas web",
+          n: "Web institucional",
+          pr: "$650.000",
+          sv: "Hasta 5 páginas",
+          r: "Hasta 5 páginas para presentar tu negocio.",
+          d: "Una web con varias secciones para mostrar tu negocio o profesión, por ejemplo: inicio, nosotros, servicios y contacto.",
+          inc: ["Hasta 5 páginas"],
+          cond: ["Precio fijo hasta 5 páginas."],
+          s: "Web institucional",
+        },
+        {
+          g: "Páginas web",
+          n: "Tienda online",
+          pr: "A cotizar",
+          sv: "Según productos y pagos",
+          r: "El precio depende de tu proyecto.",
+          d: "Una tienda para vender online. El precio depende de cuántos productos vas a cargar y de los medios de pago que necesites.",
+          inc: [],
+          cond: [
+            "Precio de referencia: cada tienda se cotiza según el proyecto.",
+          ],
+          s: "Tienda online",
+        },
+        {
+          g: "Páginas web",
+          n: "Mantenimiento mensual",
+          pr: "$50.000",
+          sv: "Por mes",
+          r: "Cuidado y soporte de tu web todos los meses.",
+          d: "Un servicio mensual para que tu web se mantenga al día y tengas a quién consultar.",
+          inc: ["Actualizaciones", "Copias de seguridad", "Soporte técnico"],
+          cond: [],
+          s: "Mantenimiento web",
+        },
+        {
+          g: "Apps móviles",
+          n: "App móvil",
+          pr: "Desde USD 1.500",
+          sv: "App simple",
+          r: "Precio de referencia: depende de tu proyecto.",
+          d: "Para una app simple con funciones básicas. El precio final depende de las funciones que necesites, de si es para Android, iOS o ambos, y de si requiere servidor.",
+          inc: [],
+          cond: ["Precio de referencia: cada app se cotiza según el proyecto."],
+          s: "App móvil",
+        },
+      ];
+      // =============================
+      // CL: códigos de categoría → nombre visible. Si agregás una categoría, sumala acá, en los chips del HTML y en el <select id="aC".
+      var CL = {
+        Video: "Edición de video",
+        Web: "Páginas web",
+        App: "Apps móviles",
+      };
+      // GR/BG: degradés de fondo (portadas sin imagen según plataforma, y slides del carrusel por posición).
+      var GR = {
+        Video: "linear-gradient(145deg,#150f10,#7a1f2b)",
+        TikTok: "linear-gradient(145deg,#150f10,#5a1520)",
+        Instagram: "linear-gradient(145deg,#3a0f18,#7a1f2b)",
+        YouTube: "linear-gradient(145deg,#12251c,#7a1f2b)",
+        Link: "linear-gradient(145deg,#12251c,#1f3a2d)",
+      };
+      var BG = [
+        "linear-gradient(120deg,#3a0f18,#7a1f2b)",
+        "linear-gradient(120deg,#12251c,#1f3a2d)",
+        "linear-gradient(120deg,#1a0f1f,#4a1d3a)",
+        "linear-gradient(120deg,#0e1424,#1b2848)",
+      ];
+      // esc(): escapa HTML antes de usar innerHTML con texto dinámico (evita inyección de código).
+      function esc(s) {
+        return String(s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+      // Atajo: $("id") = document.getElementById("id").
+      function $(i) {
+        return document.getElementById(i);
+      }
+      // pick(servicio): preselecciona el servicio en el formulario y salta a #contacto. Lo usan carrusel y modal de precios.
+      function pick(s) {
+        $("cs").value = s;
+        location.hash = "#contacto";
+      }
+      // carrusel
+      // Estado del carrusel: cur = slide actual, timer = intervalo del autoplay, reduce = ¿el usuario pidió menos movimiento?
+      var cur = 0,
+        timer,
+        reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
+      // Genera los slides desde PROMOS. El primero usa <h1> (SEO: un solo h1 por página), el resto <h2>.
+      $("track").innerHTML = PROMOS.map(function (x, i) {
+        return (
+          '<div class="slide" style="background:' +
+          BG[i % 4] +
+          '" aria-label="' +
+          (i + 1) +
+          " de " +
+          PROMOS.length +
+          '"><div class="tx"><span class="k">' +
+          esc(x.tag) +
+          "</span>" +
+          (i ? "<h2>" : "<h1>") +
+          esc(x.t) +
+          (i ? "</h2>" : "</h1>") +
+          "<p>" +
+          esc(x.p) +
+          '</p><button class="btn c" data-s="' +
+          esc(x.s) +
+          '">' +
+          esc(x.b) +
+          '</button></div><div class="arch"><span class="star">✦</span><div class="big">' +
+          esc(x.big) +
+          "</div><span>" +
+          esc(x.bs) +
+          "</span></div></div>"
+        );
+      }).join("");
+      $("dots").innerHTML = PROMOS.map(function (x, i) {
+        return (
+          '<button aria-label="Ir a promo ' +
+          (i + 1) +
+          '" data-i="' +
+          i +
+          '"></button>'
+        );
+      }).join("");
+      // go(i): muestra el slide i (con vuelta al inicio/final) moviendo el track con translateX y actualizando los puntitos.
+      function go(i) {
+        cur = (i + PROMOS.length) % PROMOS.length;
+        $("track").style.transform = "translateX(-" + cur * 100 + "%)";
+        document.querySelectorAll("#dots button").forEach(function (d, k) {
+          d.setAttribute("aria-current", k === cur);
+        });
+      }
+      // auto(): (re)inicia el autoplay cada 6 s; no corre si reduce=true. Se reinicia al interactuar.
+      function auto() {
+        clearInterval(timer);
+        if (!reduce)
+          timer = setInterval(function () {
+            go(cur + 1);
+          }, 6000);
+      }
+      $("pv").onclick = function () {
+        go(cur - 1);
+        auto();
+      };
+      $("nx").onclick = function () {
+        go(cur + 1);
+        auto();
+      };
+      document.querySelectorAll("#dots button").forEach(function (d) {
+        d.onclick = function () {
+          go(+d.dataset.i);
+          auto();
+        };
+      });
+      document.querySelectorAll(".slide [data-s]").forEach(function (b) {
+        b.onclick = function () {
+          pick(b.dataset.s);
+        };
+      });
+      go(0);
+      auto();
+      // precios + modal de info
+      // Genera una tarjeta .price por cada item y la inserta en su grupo (#p-<g>). El botón abre el modal con openInfo(i).
+      ITEMS.forEach(function (x, i) {
+        var c = document.createElement("div");
+        c.className = "price" + (x.hot ? " hot" : "");
+        c.innerHTML =
+          (x.hot ? '<span class="pill">' + x.hot + "</span>" : "") +
+          "<h3>" +
+          x.n +
+          '</h3><div class="n">' +
+          x.pr +
+          '</div><div class="s">' +
+          x.sv +
+          '</div><div class="r">' +
+          x.r +
+          '</div><button class="btn' +
+          (x.hot ? "" : " g") +
+          '">Más info</button>';
+        c.querySelector("button").onclick = function () {
+          openInfo(i);
+        };
+        $("p-" + x.g).appendChild(c);
+      });
+      // curItem: item abierto en el modal (lo usa el botón "Consultar" para saber qué servicio preseleccionar).
+      var curItem = null;
+      // lst(titulo, array): devuelve un bloque <ul> con título, o "" si el array está vacío (por eso cond:[] oculta la sección).
+      function lst(t, a) {
+        return a && a.length
+          ? "<h4>" +
+              t +
+              "</h4><ul>" +
+              a
+                .map(function (l) {
+                  return "<li>" + esc(l) + "</li>";
+                })
+                .join("") +
+              "</ul>"
+          : "";
+      }
+      // openInfo(i): llena el modal #info con los datos de ITEMS[i] y lo abre con showModal().
+      function openInfo(i) {
+        var x = ITEMS[i];
+        curItem = x;
+        $("it").textContent = x.n;
+        $("ip").textContent = x.pr + (x.sv ? " · " + x.sv : "");
+        $("ib").innerHTML =
+          '<p style="color:var(--mut);margin:8px 0 0">' +
+          esc(x.d) +
+          "</p>" +
+          lst("Qué incluye", x.inc) +
+          lst("Condiciones", x.cond);
+        $("info").showModal();
+      }
+      $("ix").onclick = function () {
+        $("info").close();
+      };
+      $("ic").onclick = function () {
+        $("info").close();
+        pick(curItem.s);
+      };
+      // contacto
+      // Link directo a WhatsApp.
+      $("wa").href = "https://wa.me/" + WA;
+      // Formulario sin backend: arma el mensaje y abre wa.me con ?text=... (encodeURIComponent). preventDefault evita recargar la página.
+      $("cf").onsubmit = function (e) {
+        e.preventDefault();
+        var m =
+          "Hola, soy " +
+          $("cn").value +
+          ". Quiero cotizar: " +
+          $("cs").value +
+          ". " +
+          $("cm").value;
+        window.open(
+          "https://wa.me/" + WA + "?text=" + encodeURIComponent(m),
+          "_blank",
+        );
+      };
+      // portfolio
+      // PORTFOLIO. KEY = clave de localStorage donde se guardan los trabajos agregados desde el modo edición (solo en ESE navegador).
+      var KEY = "jesi_extra_v2",
+        extra = [],
+        edit = false,
+        filter = "todo";
+      try {
+        extra = JSON.parse(localStorage.getItem(KEY) || "[]");
+      } catch (e) {
+        extra = [];
+      }
+      // save(): persiste el array extra en localStorage (try/catch: puede fallar si está lleno o bloqueado).
+      function save() {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(extra));
+        } catch (e) {
+          alert("No se pudo guardar (imagen muy pesada).");
+        }
+      }
+      // plat(url): detecta la plataforma por el dominio (TikTok/Instagram/YouTube/Link) para la insignia y el degradé.
+      function plat(u) {
+        u = u.toLowerCase();
+        if (/\.(mp4|webm|mov|m4v)(\?.*)?$/.test(u)) return "Video";
+        return u.includes("tiktok")
+          ? "TikTok"
+          : u.includes("instagram")
+            ? "Instagram"
+            : u.includes("youtube") || u.includes("youtu.be")
+              ? "YouTube"
+              : "Link";
+      }
+      // ytId(url): extrae el ID de 11 caracteres de un link de YouTube (watch, youtu.be, shorts, embed). null si no es YouTube.
+      function ytId(u) {
+        var m = u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);
+        return m ? m[1] : null;
+      }
+      // all(): une SEED (fijos, src "s") + extra (guardados, src "e") y guarda el índice i para poder borrarlos.
+      function all() {
+        return SEED.map(function (x, i) {
+          return Object.assign({}, x, { src: "s", i: i });
+        }).concat(
+          extra.map(function (x, i) {
+            return Object.assign({}, x, { src: "e", i: i });
+          }),
+        );
+      }
+      // render(): dibuja la grilla según el filtro actual. Solo los trabajos de src "e" muestran el botón × en modo edición.
+      // orient(x): "v" (vertical) u "h" (horizontal) para la forma de la tarjeta.
+      //   Prioridad: campo "o" del trabajo > tipo de link (TikTok/Instagram/Shorts = v, YouTube normal = h, resto = h) > null (video propio: se mide al cargar).
+      function orient(x) {
+        if (x.o) return x.o;
+        var e = embedInfo(x.u);
+        if (e && e.k === "iframe") return e.v ? "v" : "h";
+        if (e && e.k === "video") return null;
+        return "h";
+      }
+      function render() {
+        var g = $("grid"),
+          list = all().filter(function (x) {
+            return CL[x.c] && (filter === "todo" || x.c === filter);
+          });
+        g.innerHTML = "";
+        if (!list.length) {
+          g.innerHTML =
+            '<p class="empty">Todavía no hay trabajos en esta categoría.</p>';
+          return;
+        }
+        list.forEach(function (x) {
+          var p = plat(x.u),
+            b = document.createElement("div");
+          b.className = "item";
+          var isV = !x.cover && p === "Video",
+            cv = x.cover
+              ? '<img class="cover" alt="" src="' + x.cover + '">'
+              : isV
+                ? '<video class="cover" src="' +
+                  esc(x.u) +
+                  '#t=0.5" muted playsinline preload="metadata"></video>'
+                : '<div class="cover" style="background:' +
+                  GR[p] +
+                  '">' +
+                  esc(x.t) +
+                  "</div>";
+          b.innerHTML =
+            '<button class="card" aria-label="Abrir ' +
+            esc(x.t) +
+            '"><div class="cw">' +
+            cv +
+            '</div><span class="badge">' +
+            p +
+            '</span><div class="meta"><h3>' +
+            esc(x.t) +
+            "</h3><span>" +
+            CL[x.c] +
+            "</span></div></button>";
+          b.firstChild.onclick = function () {
+            show(x);
+          };
+          // Forma de la portada según orientación. Si es video propio (o===null) se arranca vertical y se corrige al leer su tamaño real.
+          var cw = b.querySelector(".cw"),
+            o = orient(x);
+          cw.className = "cw" + (o === "h" ? "" : " v");
+          if (o === null) {
+            var pr = document.createElement("video");
+            pr.preload = "metadata";
+            pr.onloadedmetadata = function () {
+              cw.className =
+                "cw" + (pr.videoHeight > pr.videoWidth ? " v" : "");
+            };
+            pr.src = x.u;
+          }
+          if (edit && x.src === "e") {
+            var d = document.createElement("button");
+            d.className = "del";
+            d.textContent = "×";
+            d.setAttribute("aria-label", "Eliminar");
+            d.onclick = function () {
+              extra.splice(x.i, 1);
+              save();
+              render();
+            };
+            b.appendChild(d);
+          }
+          g.appendChild(b);
+        });
+      }
+      // embedInfo(url): decide CÓMO mostrar un link dentro de la web.
+      //   TikTok / Instagram / YouTube -> iframe con la URL de "embed" oficial | archivo .mp4/.webm -> <video> propio | otro -> null
+      //   v = true si es vertical (marco de celular). Si es null (video propio) se decide leyendo el tamaño real del video.
+      function embedInfo(u) {
+        var m;
+        if ((m = u.match(/tiktok\.com\/.*?\/video\/(\d+)/)))
+          return {
+            k: "iframe",
+            src: "https://www.tiktok.com/embed/v2/" + m[1],
+            v: true,
+          };
+        if (
+          (m = u.match(
+            /instagram\.com\/(?:[\w.]+\/)?(reel|reels|p|tv)\/([\w-]+)/,
+          ))
+        )
+          return {
+            k: "iframe",
+            src:
+              "https://www.instagram.com/" +
+              (m[1] === "reels" ? "reel" : m[1]) +
+              "/" +
+              m[2] +
+              "/embed",
+            v: true,
+          };
+        if ((m = u.match(/youtube\.com\/shorts\/([\w-]{11})/)))
+          return {
+            k: "iframe",
+            src: "https://www.youtube-nocookie.com/embed/" + m[1],
+            v: true,
+          };
+        if ((m = ytId(u)))
+          return {
+            k: "iframe",
+            src: "https://www.youtube-nocookie.com/embed/" + m,
+            v: false,
+          };
+        if (/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(u))
+          return { k: "video", src: u, v: null };
+        return null;
+      }
+      // show(x): abre el visor. Vertical -> dentro de un "celular" (.phone); horizontal -> caja 16:9 (.hbox).
+      //   x.o ("v"/"h") fuerza la orientación. Si no se puede embeber, muestra la portada o un aviso + botón a la plataforma.
+      function show(x) {
+        var e = embedInfo(x.u),
+          b = $("vb");
+        $("vt").textContent = x.t;
+        $("vl").href = x.u;
+        $("vl").style.display = e && e.k === "video" ? "none" : "";
+        $("vl").textContent =
+          plat(x.u) === "Link" ? "Abrir enlace" : "Abrir en " + plat(x.u);
+        if (!e) {
+          b.innerHTML = x.cover
+            ? '<img class="big-img" alt="' +
+              esc(x.t) +
+              '" src="' +
+              x.cover +
+              '">'
+            : '<p class="hint">Este trabajo se ve mejor en su plataforma original. Tocá el botón para abrirlo.</p>';
+        } else if (e.k === "video") {
+          b.innerHTML =
+            '<div class="phone" id="vf"><video src="' +
+            esc(e.src) +
+            '" controls playsinline></video></div>';
+          var vd = b.querySelector("video");
+          vd.onloadedmetadata = function () {
+            var h = x.o ? x.o === "h" : vd.videoWidth >= vd.videoHeight;
+            $("vf").className = h ? "hbox" : "phone";
+          };
+        } else {
+          var vert = x.o ? x.o === "v" : e.v;
+          b.innerHTML =
+            '<div class="' +
+            (vert ? "phone" : "hbox") +
+            '"><iframe src="' +
+            esc(e.src) +
+            '" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy" title="' +
+            esc(x.t) +
+            '"></iframe></div><p class="hint" style="text-align:center">¿No se ve? Abrilo con el botón de abajo.</p>';
+        }
+        $("viewer").showModal();
+      }
+      // Al cerrar el visor (botón o tecla Esc) se vacía el contenido para que el video deje de sonar.
+      $("viewer").addEventListener("close", function () {
+        $("vb").innerHTML = "";
+      });
+      $("vc").onclick = function () {
+        $("vb").innerHTML = "";
+        $("viewer").close();
+      };
+      // Filtros: al hacer click guarda el filtro, actualiza aria-pressed y vuelve a renderizar.
+      document.querySelectorAll("[data-f]").forEach(function (c) {
+        c.onclick = function () {
+          filter = c.dataset.f;
+          document.querySelectorAll("[data-f]").forEach(function (o) {
+            o.setAttribute("aria-pressed", o === c);
+          });
+          render();
+        };
+      });
+      // Modo edición: 1er click activa el modo (muestra ×), los siguientes abren el modal para agregar.
+      $("editBtn").onclick = function () {
+        var eb = $("editBtn");
+        if (!edit) {
+          edit = true;
+          eb.textContent = "Agregar trabajo";
+          render();
+          return;
+        }
+        $("adder").showModal();
+      };
+      $("aX").onclick = function () {
+        $("adder").close();
+      };
+      // shrink(file, cb): redimensiona la imagen a máx. 700px con <canvas> y la pasa a JPEG base64 (calidad .8) para no llenar localStorage.
+      function shrink(f, cb) {
+        var r = new FileReader();
+        r.onload = function () {
+          var im = new Image();
+          im.onload = function () {
+            var s = Math.min(1, 700 / im.width),
+              c = document.createElement("canvas");
+            c.width = im.width * s;
+            c.height = im.height * s;
+            c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+            cb(c.toDataURL("image/jpeg", 0.8));
+          };
+          im.src = r.result;
+        };
+        r.readAsDataURL(f);
+      }
+      // Guardar trabajo: valida título y link, procesa la portada (si hay), lo agrega a extra, guarda y re-renderiza.
+      $("aS").onclick = function () {
+        var t = $("aT").value.trim(),
+          u = $("aU").value.trim(),
+          f = $("aI").files[0];
+        if (!t || !u) {
+          alert("Completá el título y el link.");
+          return;
+        }
+        function done(c) {
+          extra.push({ t: t, c: $("aC").value, u: u, cover: c || "" });
+          save();
+          render();
+          $("adder").close();
+          ["aT", "aU", "aI"].forEach(function (i) {
+            $(i).value = "";
+          });
+        }
+        f ? shrink(f, done) : done("");
+      };
+      // Render inicial al cargar la página.
+      render();
+    </script>
+  </body>
 </html>
