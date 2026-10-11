@@ -17,7 +17,7 @@
     <style>
       /* VARIABLES DE MARCA (paleta del moodboard). Cambiás un color acá y se actualiza en toda la web.
      --bg fondo | --s1/--s2 superficies (tarjetas/modales) | --ink texto crema | --mut texto apagado
-     --line bordes | --bor borgoña (botones) | --ver verde bosque (tarjeta destacada) | --oro dorado (acentos)
+     --line bordes | --bor negro suave | --ver verde bosque (tarjeta destacada) | --oro dorado (acentos)
      padding-bottom con env(): respeta la barra inferior del iPhone (safe-area). */
       :root {
         --bg: #0b0909;
@@ -26,7 +26,7 @@
         --ink: #efe8dc;
         --mut: #b3a58f;
         --line: #33292a;
-        --bor: #7a1f2b;
+        --bor: #1a1516;
         --ver: #1f3a2d;
         --oro: #c9a24d;
         box-sizing: border-box;
@@ -158,8 +158,8 @@
         color: var(--ink);
       }
       .links a.cta {
-        background: var(--bor);
-        color: var(--ink);
+        background: var(--ink);
+        color: #0b0909;
       }
       @media (max-width: 700px) {
         .logo {
@@ -169,10 +169,11 @@
           justify-content: flex-start;
         }
       }
-      /* BOTONES: .btn (borgoña, principal) | .btn.g (contorno, secundario) | .btn.c (crema, usado sobre el carrusel). */
+      /* BOTONES: .btn (crema, principal) | .btn.g (contorno, secundario) | .btn.c (crema, usado sobre el carrusel). */
       .btn {
-        background: var(--bor);
-        color: var(--ink);
+        background: var(--ink);
+        color: #0b0909;
+        transition: background 0.2s, color 0.2s, transform 0.2s, border-color 0.2s;
         border: 0;
         border-radius: 99px;
         padding: 12px 28px;
@@ -184,13 +185,17 @@
         display: inline-block;
       }
       .btn:hover {
-        background: #8d2735;
+        background: var(--oro);
+        transform: translateY(-2px);
       }
       .btn.g {
         background: transparent;
+        color: var(--ink);
         border: 1.5px solid var(--line);
       }
       .btn.g:hover {
+        background: transparent;
+        color: var(--oro);
         border-color: var(--oro);
       }
       .btn.c {
@@ -389,9 +394,16 @@
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 18px;
         align-items: start;
+        grid-auto-flow: dense; /* rellena huecos cuando hay tarjetas anchas */
       }
       .item {
         position: relative;
+      }
+      /* Trabajos HORIZONTALES (YouTube, webs): ocupan 2 columnas para verse más grandes. En celular (1 columna) ocupan todo el ancho. */
+      @media (min-width: 620px) {
+        .item.h {
+          grid-column: span 2;
+        }
       }
       /* .card: cada trabajo es un <button> (accesible por teclado). .cover puede ser <img> (portada) o <div> con degradé. */
       .card {
@@ -417,6 +429,10 @@
       }
       .cw.v {
         aspect-ratio: 9/16;
+      }
+      /* .cw.p: portada de CARRUSEL de diseño (4:5, como un post de Instagram) */
+      .cw.p {
+        aspect-ratio: 4/5;
       }
       .cover {
         width: 100%;
@@ -454,8 +470,8 @@
         position: absolute;
         top: 10px;
         right: 10px;
-        background: var(--bor);
-        color: #fff;
+        background: var(--ink);
+        color: #0b0909;
         border: 0;
         border-radius: 99px;
         width: 30px;
@@ -642,6 +658,35 @@
       dialog::backdrop {
         background: rgba(0, 0, 0, 0.82);
       }
+      /* dialog.wide: visor más ancho para videos horizontales */
+      dialog.wide {
+        width: min(900px, 94vw);
+      }
+      /* .sl: visor de carrusel de diseño (imágenes 4:5 con flechas). Reutiliza .arr/.l/.r del carrusel de promos. */
+      .sl {
+        position: relative;
+        --h: min(62vh, 640px);
+        height: var(--h);
+        width: calc(var(--h) * 4 / 5);
+        max-width: 100%;
+        margin: 14px auto 0;
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .sl img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .sl .cnt {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.85rem;
+      }
       dialog h4 {
         font:
           500 0.8rem "Jost",
@@ -738,6 +783,48 @@
         background: #000;
         object-fit: contain;
       }
+      /* ===== DINAMISMO ===== */
+      /* Barra de progreso de scroll (arriba de todo) */
+      #prog { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--oro); z-index: 40; }
+      /* Navbar: se achica al scrollear (.sc) y marca la sección activa (.on) */
+      .top .wrap { transition: height 0.3s; }
+      .top.sc .wrap { height: 56px; }
+      .links a.on { color: var(--ink); background: var(--s2); }
+      /* HERO: titular con palabra rotativa, luces animadas de fondo y "línea de tiempo" de edición con cabezal que avanza */
+      .hero { position: relative; isolation: isolate; overflow: hidden; padding: 72px 0 0; }
+      .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(90px); z-index: -1; animation: fl 14s ease-in-out infinite alternate; }
+      .hero::before { width: 420px; height: 420px; background: rgba(201, 162, 77, 0.16); top: -120px; left: -80px; }
+      .hero::after { width: 380px; height: 380px; background: rgba(31, 58, 45, 0.55); bottom: -100px; right: -60px; animation-delay: -6s; }
+      @keyframes fl { to { transform: translate(60px, 40px) scale(1.15); } }
+      .hero h1 { font-size: clamp(2.8rem, 8.5vw, 6.4rem); letter-spacing: -0.03em; max-width: 13ch; }
+      .rot { display: inline-block; color: var(--oro); font-style: italic; transition: opacity 0.35s, transform 0.35s; }
+      .rot.out { opacity: 0; transform: translateY(0.25em); }
+      .tl { position: relative; height: 30px; margin-top: 44px; border-bottom: 2px solid var(--line); background: repeating-linear-gradient(90deg, var(--line) 0 2px, transparent 2px 24px) bottom / 100% 12px no-repeat; }
+      .ph { position: absolute; bottom: -2px; left: 0; width: 2px; height: 30px; background: var(--oro); animation: ph 8s linear infinite; }
+      .ph::before { content: ""; position: absolute; top: -4px; left: -6px; border: 7px solid transparent; border-top: 9px solid var(--oro); border-bottom: 0; }
+      @keyframes ph { to { left: 100%; } }
+      /* Cinta de servicios que se desplaza sola (se pausa al pasar el mouse) */
+      .marquee { overflow: hidden; border-block: 1px solid var(--line); padding: 16px 0; margin-top: 36px; }
+      .mq { display: flex; width: max-content; animation: mq 32s linear infinite; font: italic 500 1.5rem "Bodoni Moda", serif; color: var(--mut); white-space: nowrap; }
+      .mq span { margin-right: 40px; }
+      .mq .s { color: var(--oro); font-style: normal; }
+      .marquee:hover .mq { animation-play-state: paused; }
+      @keyframes mq { to { transform: translateX(-50%); } }
+      /* Aparición al scrollear (clase .rv la agrega el JS; se quita al terminar para no interferir con los hover) */
+      .rv { opacity: 0; transform: translateY(26px); }
+      .rv.in { opacity: 1; transform: none; transition: opacity 0.7s ease, transform 0.7s ease; }
+      /* Foco de luz dorado que sigue al mouse sobre tarjetas (.spot) */
+      .spot { position: relative; }
+      .spot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.3s; background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(201, 162, 77, 0.15), transparent 60%); }
+      .spot:hover::after { opacity: 1; }
+      /* Hover de tarjetas: sube, zoom a la portada y botón play */
+      .card, .price, .step, .way { transition: transform 0.3s, border-color 0.3s; }
+      .card:hover, .price:hover, .step:hover { transform: translateY(-4px); }
+      .cw { position: relative; }
+      .cover { transition: transform 0.5s; }
+      .card:hover .cover { transform: scale(1.05); }
+      .play { position: absolute; top: 50%; left: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%; background: rgba(11, 9, 9, 0.6); backdrop-filter: blur(6px); border: 1.5px solid var(--ink); display: grid; place-items: center; font-size: 1rem; padding-left: 3px; transition: transform 0.3s, background 0.3s; pointer-events: none; }
+      .card:hover .play { transform: scale(1.12); background: var(--oro); color: #0b0909; border-color: var(--oro); }
       /* FOOTER. */
       footer {
         border-top: 1px solid var(--line);
@@ -761,9 +848,14 @@
           scroll-behavior: auto;
         }
       }
+      @media (prefers-reduced-motion: reduce) {
+        .hero::before, .hero::after, .ph, .mq { animation: none; }
+        .rv { opacity: 1; transform: none; }
+      }
     </style>
   </head>
   <body>
+    <div id="prog"></div>
     <!-- NAVBAR: los href="#..." llevan a los id de cada <section> (navegación por anclas). -->
     <header class="top">
       <div class="wrap">
@@ -782,8 +874,30 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <main>
-      <!-- INICIO — CARRUSEL DE PROMOCIONES. Los slides y puntitos NO están escritos acá: se generan desde JS con el array PROMOS. -->
-      <section id="inicio" style="padding: 8px 0 0">
+      <!-- HERO — titular con palabra rotativa (#rot, ver JS), botones y línea de tiempo animada. Es el único <h1> de la página. -->
+      <section class="hero" id="inicio">
+        <div class="wrap">
+          <p class="k">Edición de video · Páginas web</p>
+          <h1 style="margin-top: 18px">
+            Edito <span class="rot" id="rot">reels</span><br />y creo webs a tu
+            medida.
+          </h1>
+          <p class="lead" style="margin-top: 22px; font-size: 1.15rem">
+            Contenido que se ve profesional y páginas web que presentan tu marca
+            como se merece.
+          </p>
+          <div class="row">
+            <a class="btn" href="#trabajos">Ver trabajos</a>
+            <a class="btn g" href="#contacto">Pedir presupuesto</a>
+          </div>
+          <div class="tl" aria-hidden="true"><div class="ph"></div></div>
+        </div>
+        <!-- Cinta animada de servicios (se llena desde JS con el array MQ) -->
+        <div class="marquee" aria-hidden="true"><div class="mq" id="mq"></div></div>
+      </section>
+
+      <!-- PROMOS — CARRUSEL DE PROMOCIONES. Los slides y puntitos NO están escritos acá: se generan desde JS con el array PROMOS. -->
+      <section id="promos" style="padding: 8px 0 0">
         <div class="wrap">
           <div
             class="car"
@@ -824,9 +938,7 @@
               <b>Páginas web</b
               ><span>Landing, institucionales y tiendas online</span>
             </div>
-            <div>
-              <b>Apps móviles</b><span>Desde apps simples, a medida</span>
-            </div>
+            <!-- <div><b>Apps móviles</b><span>Desde apps simples, a medida</span></div> -->
           </div>
         </div>
       </section>
@@ -846,11 +958,12 @@
             <button class="chip" data-f="Web" aria-pressed="false">
               Páginas web
             </button>
-            <button class="chip" data-f="App" aria-pressed="false">
-              Apps móviles
+            <!-- <button class="chip" data-f="App" aria-pressed="false">Apps móviles</button> -->
+            <button class="chip" data-f="Diseño" aria-pressed="false">
+              Diseño
             </button>
             <span class="sp"></span>
-            <button class="chip edit" id="editBtn">Editar portfolio</button>
+            <button class="chip edit" id="editBtn" hidden>Editar portfolio</button>
           </nav>
           <div class="grid" id="grid"></div>
         </div>
@@ -910,8 +1023,8 @@
           <div class="prices" id="p-Edición de video"></div>
           <h3 class="sub">Páginas web</h3>
           <div class="prices" id="p-Páginas web"></div>
-          <h3 class="sub">Apps móviles</h3>
-          <div class="prices" id="p-Apps móviles"></div>
+          <!-- <h3 class="sub">Apps móviles</h3> -->
+          <!-- <div class="prices" id="p-Apps móviles"></div> -->
         </div>
       </section>
 
@@ -948,7 +1061,7 @@
                 <option>Web institucional</option>
                 <option>Tienda online</option>
                 <option>Mantenimiento web</option>
-                <option>App móvil</option>
+                <!-- <option>App móvil</option> -->
                 <option>Otro</option>
               </select>
               <label for="cm">Mensaje</label
@@ -1001,7 +1114,7 @@
       ><select id="aC">
         <option value="Video">Edición de video</option>
         <option value="Web">Páginas web</option>
-        <option value="App">Apps móviles</option>
+        <!-- <option value="App">Apps móviles</option> -->
       </select>
       <label for="aU"
         >Link (YouTube, TikTok, Instagram, sitio web) o ruta de un video
@@ -1050,10 +1163,11 @@
       // SEED = trabajos permanentes del portfolio (los ve todo el mundo).
       // c: "Video" | "Web" | "App" | u: link | cover: imagen en base64 (o "" para usar degradé).
       // u acepta: link de YouTube / TikTok / Instagram (se reproduce DENTRO de la web) o la ruta a un video propio, ej. "videos/reel1.mp4".
+      // CARRUSELES DE DISEÑO: { t:"Título", c:"Diseño", imgs:["img/c1.jpg","img/c2.jpg","img/c3.jpg"], u:"" }  (u opcional: link al post). La portada es la 1ª imagen.
       // o (opcional): "v" fuerza marco de celular, "h" fuerza horizontal. Para TikTok usá el link completo (con /video/NUMERO), no el corto vm.tiktok.com.
       var SEED = [
         {
-          t: "Reel de prueba",
+          t: "Reel para Sophia Fernández Dal",
           c: "Video",
           u: "https://www.instagram.com/p/DW6qVGXEe3P/",
           cover: "videos/si.png",
@@ -1065,23 +1179,22 @@
           cover: "videos/alex.png",
         },
         {
-          t: "TikTok de ejemplo",
+          t: "TikTok para Aura Hogar",
           c: "Video",
           u: "https://www.tiktok.com/@sofia.fernandezdal/video/7632463666327080200",
           cover: "videos/s.png",
         },
         {
-          t: "Reel de Instagram de ejemplo",
-          c: "Video",
-          u: "https://www.instagram.com/reel/XYZ789/",
-          cover: "",
+          t: "Web de ejemplo",
+          c: "Web",
+          u: "https://jesicaacosta.github.io/jesiestudio/",
+          cover: "videos/web.png",
         },
-        { t: "Web de ejemplo", c: "Web", u: "https://ejemplo.com", cover: "" },
         {
-          t: "App de ejemplo",
-          c: "App",
-          u: "https://ejemplo.com/app",
-          cover: "",
+          t: "Carrusel para Aura Hogar",
+          c: "Diseño",
+          imgs: ["videos/carr/1.png", "videos/carr/2.png", "videos/carr/3.png", "videos/carr/4.png", "videos/carr/5.png", "videos/carr/6.png", "videos/carr/7.png", "videos/carr/8.png", "videos/carr/9.png", "videos/carr/10.png", "videos/carr/11.png", "videos/carr/12.png", "videos/carr/13.png", "videos/carr/14.png", "videos/carr/15.png"],
+          u: "https://www.instagram.com/p/DWY4_DQAJnC/?img_index=1",
         },
       ];
       // g = grupo · pr = precio · sv = subtítulo · r = resumen corto · d = descripción del modal
@@ -1093,7 +1206,7 @@
           pr: "$20.000",
           sv: "Por video",
           r: "Edición completa, portada y descripción.",
-          d: "Un reel editado de principio a fin, listo para publicar en Instagram, TikTok o YouTube.",
+          d: "Un reel editado de principio a fin, listo para publicar en Instagram, TikTok o YouTube shorts.",
           inc: [
             "Edición completa del video",
             "Diseño de portada personalizada con tu marca",
@@ -1187,37 +1300,26 @@
           cond: [],
           s: "Mantenimiento web",
         },
-        {
-          g: "Apps móviles",
-          n: "App móvil",
-          pr: "Desde USD 1.500",
-          sv: "App simple",
-          r: "Precio de referencia: depende de tu proyecto.",
-          d: "Para una app simple con funciones básicas. El precio final depende de las funciones que necesites, de si es para Android, iOS o ambos, y de si requiere servidor.",
-          inc: [],
-          cond: ["Precio de referencia: cada app se cotiza según el proyecto."],
-          s: "App móvil",
-        },
       ];
       // =============================
       // CL: códigos de categoría → nombre visible. Si agregás una categoría, sumala acá, en los chips del HTML y en el <select id="aC".
       var CL = {
         Video: "Edición de video",
         Web: "Páginas web",
-        App: "Apps móviles",
+        Diseño: "Diseño de carruseles",
       };
       // GR/BG: degradés de fondo (portadas sin imagen según plataforma, y slides del carrusel por posición).
       var GR = {
-        Video: "linear-gradient(145deg,#150f10,#7a1f2b)",
-        TikTok: "linear-gradient(145deg,#150f10,#5a1520)",
-        Instagram: "linear-gradient(145deg,#3a0f18,#7a1f2b)",
-        YouTube: "linear-gradient(145deg,#12251c,#7a1f2b)",
+        Video: "linear-gradient(145deg,#0b0909,#2b2223)",
+        TikTok: "linear-gradient(145deg,#0b0909,#1d1819)",
+        Instagram: "linear-gradient(145deg,#141010,#3a2f30)",
+        YouTube: "linear-gradient(145deg,#0e1a14,#2b2223)",
         Link: "linear-gradient(145deg,#12251c,#1f3a2d)",
       };
       var BG = [
-        "linear-gradient(120deg,#3a0f18,#7a1f2b)",
+        "linear-gradient(120deg,#0b0909,#231c1d)",
         "linear-gradient(120deg,#12251c,#1f3a2d)",
-        "linear-gradient(120deg,#1a0f1f,#4a1d3a)",
+        "linear-gradient(120deg,#0b0909,#1b1618)",
         "linear-gradient(120deg,#0e1424,#1b2848)",
       ];
       // esc(): escapa HTML antes de usar innerHTML con texto dinámico (evita inyección de código).
@@ -1235,6 +1337,89 @@
         $("cs").value = s;
         location.hash = "#contacto";
       }
+      // ===== EFECTOS / ANIMACIONES =====
+      // RM = el usuario pidió menos movimiento: se desactivan los efectos.
+      var RM = matchMedia("(prefers-reduced-motion:reduce)").matches;
+      // reveal(el, i): el elemento aparece (fade + slide) cuando entra en pantalla, escalonado según i. Usa IntersectionObserver.
+      var io =
+        "IntersectionObserver" in window && !RM
+          ? new IntersectionObserver(
+              function (es) {
+                es.forEach(function (e) {
+                  if (e.isIntersecting) {
+                    var t = e.target;
+                    t.classList.add("in");
+                    io.unobserve(t);
+                    // al terminar la animación se limpian las clases para no molestar a los hover
+                    setTimeout(function () {
+                      t.classList.remove("rv", "in");
+                      t.style.transitionDelay = "";
+                    }, 1200);
+                  }
+                });
+              },
+              { threshold: 0.12 },
+            )
+          : null;
+      function reveal(el, i) {
+        if (!io) return;
+        el.classList.add("rv");
+        el.style.transitionDelay = ((i || 0) % 4) * 80 + "ms";
+        io.observe(el);
+      }
+      document
+        .querySelectorAll(
+          ".wrap>h2,.wrap>.lead,.wrap>.sub,.note,.step,.sv>div,.way,#cf,.about>div,.hero .wrap>*",
+        )
+        .forEach(reveal);
+      // Foco de luz que sigue al mouse (.spot): guarda la posición del mouse en --mx/--my.
+      document.querySelectorAll(".step,.way").forEach(function (el) {
+        el.classList.add("spot");
+      });
+      document.addEventListener("mousemove", function (e) {
+        var t = e.target.closest && e.target.closest(".spot");
+        if (t) {
+          var r = t.getBoundingClientRect();
+          t.style.setProperty("--mx", e.clientX - r.left + "px");
+          t.style.setProperty("--my", e.clientY - r.top + "px");
+        }
+      });
+      // Palabra rotativa del titular (cambia cada 2,4 s con fade).
+      var words = ["reels", "TikToks", "videos de YouTube", "contenido que engancha"],
+        rw = 0;
+      if (!RM)
+        setInterval(function () {
+          $("rot").classList.add("out");
+          setTimeout(function () {
+            rw = (rw + 1) % words.length;
+            $("rot").textContent = words[rw];
+            $("rot").classList.remove("out");
+          }, 350);
+        }, 2400);
+      // Cinta de servicios: se duplica el contenido para que el loop (-50%) sea continuo.
+      var MQ = ["Reels", "TikTok", "YouTube", "Landing pages", "Webs institucionales", "Tiendas online"];
+      var mqh = MQ.map(function (w) {
+        return "<span>" + w + '</span><span class="s">✦</span>';
+      }).join("");
+      $("mq").innerHTML = mqh + mqh;
+      // Scroll: barra de progreso, navbar compacta y link de la sección activa (scrollspy).
+      var secs = ["inicio", "quien-soy", "trabajos", "contratar", "precios", "contacto"].map($);
+      function onScroll() {
+        var h = document.documentElement,
+          m = h.scrollHeight - h.clientHeight;
+        $("prog").style.width = (m > 0 ? (h.scrollTop / m) * 100 : 0) + "%";
+        document.querySelector(".top").classList.toggle("sc", h.scrollTop > 40);
+        var y = scrollY + 140,
+          cur = "";
+        secs.forEach(function (s) {
+          if (s && s.offsetTop <= y) cur = s.id;
+        });
+        document.querySelectorAll(".links a").forEach(function (a) {
+          a.classList.toggle("on", a.getAttribute("href") === "#" + cur);
+        });
+      }
+      addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
       // carrusel
       // Estado del carrusel: cur = slide actual, timer = intervalo del autoplay, reduce = ¿el usuario pidió menos movimiento?
       var cur = 0,
@@ -1252,9 +1437,9 @@
           '"><div class="tx"><span class="k">' +
           esc(x.tag) +
           "</span>" +
-          (i ? "<h2>" : "<h1>") +
+          "<h2>" +
           esc(x.t) +
-          (i ? "</h2>" : "</h1>") +
+          "</h2>" +
           "<p>" +
           esc(x.p) +
           '</p><button class="btn c" data-s="' +
@@ -1336,6 +1521,8 @@
           openInfo(i);
         };
         $("p-" + x.g).appendChild(c);
+        c.classList.add("spot");
+        reveal(c, i);
       });
       // curItem: item abierto en el modal (lo usa el botón "Consultar" para saber qué servicio preseleccionar).
       var curItem = null;
@@ -1431,10 +1618,10 @@
       // all(): une SEED (fijos, src "s") + extra (guardados, src "e") y guarda el índice i para poder borrarlos.
       function all() {
         return SEED.map(function (x, i) {
-          return Object.assign({}, x, { src: "s", i: i });
+          return Object.assign({ u: "" }, x, { src: "s", i: i });
         }).concat(
           extra.map(function (x, i) {
-            return Object.assign({}, x, { src: "e", i: i });
+            return Object.assign({ u: "" }, x, { src: "e", i: i });
           }),
         );
       }
@@ -1443,12 +1630,21 @@
       //   Prioridad: campo "o" del trabajo > tipo de link (TikTok/Instagram/Shorts = v, YouTube normal = h, resto = h) > null (video propio: se mide al cargar).
       function orient(x) {
         if (x.o) return x.o;
+        if (x.imgs) return "p"; // carrusel de diseño
         var e = embedInfo(x.u);
         if (e && e.k === "iframe") return e.v ? "v" : "h";
         if (e && e.k === "video") return null;
         return "h";
       }
       function render() {
+        // Oculta los filtros de categorías sin trabajos (así "Diseño" no aparece vacío).
+        document.querySelectorAll("[data-f]").forEach(function (c) {
+          c.hidden =
+            c.dataset.f !== "todo" &&
+            !all().some(function (x) {
+              return x.c === c.dataset.f;
+            });
+        });
         var g = $("grid"),
           list = all().filter(function (x) {
             return CL[x.c] && (filter === "todo" || x.c === filter);
@@ -1459,9 +1655,10 @@
             '<p class="empty">Todavía no hay trabajos en esta categoría.</p>';
           return;
         }
-        list.forEach(function (x) {
-          var p = plat(x.u),
+        list.forEach(function (x, idx) {
+          var p = x.imgs ? "Carrusel" : plat(x.u),
             b = document.createElement("div");
+          if (x.imgs && !x.cover) x = Object.assign({}, x, { cover: x.imgs[0] }); // portada = 1ª imagen del carrusel
           b.className = "item";
           var isV = !x.cover && p === "Video",
             cv = x.cover
@@ -1476,10 +1673,11 @@
                   esc(x.t) +
                   "</div>";
           b.innerHTML =
-            '<button class="card" aria-label="Abrir ' +
+            '<button class="card spot" aria-label="Abrir ' +
             esc(x.t) +
             '"><div class="cw">' +
             cv +
+            (x.c === "Video" ? '<span class="play" aria-hidden="true">▶</span>' : "") +
             '</div><span class="badge">' +
             p +
             '</span><div class="meta"><h3>' +
@@ -1493,13 +1691,15 @@
           // Forma de la portada según orientación. Si es video propio (o===null) se arranca vertical y se corrige al leer su tamaño real.
           var cw = b.querySelector(".cw"),
             o = orient(x);
-          cw.className = "cw" + (o === "h" ? "" : " v");
+          cw.className = "cw" + (o === "h" ? "" : o === "p" ? " p" : " v");
+          if (o === "h") b.classList.add("h"); // más ancho en la grilla
           if (o === null) {
             var pr = document.createElement("video");
             pr.preload = "metadata";
             pr.onloadedmetadata = function () {
-              cw.className =
-                "cw" + (pr.videoHeight > pr.videoWidth ? " v" : "");
+              var horiz = pr.videoHeight <= pr.videoWidth;
+              cw.className = "cw" + (horiz ? "" : " v");
+              if (horiz) b.classList.add("h");
             };
             pr.src = x.u;
           }
@@ -1516,6 +1716,7 @@
             b.appendChild(d);
           }
           g.appendChild(b);
+          reveal(b, idx);
         });
       }
       // embedInfo(url): decide CÓMO mostrar un link dentro de la web.
@@ -1565,7 +1766,33 @@
       function show(x) {
         var e = embedInfo(x.u),
           b = $("vb");
+        $("viewer").classList.remove("wide");
         $("vt").textContent = x.t;
+        if (x.imgs) {
+          // Carrusel de diseño: imágenes con flechas y contador.
+          var si = 0,
+            n = x.imgs.length;
+          b.innerHTML =
+            '<div class="sl"><img id="sli" alt=""><button class="arr l" id="slp" aria-label="Anterior">‹</button><button class="arr r" id="sln" aria-label="Siguiente">›</button><div class="cnt" id="slc"></div></div>';
+          var go2 = function (d) {
+            si = (si + d + n) % n;
+            $("sli").src = x.imgs[si];
+            $("sli").alt = x.t + " — imagen " + (si + 1);
+            $("slc").textContent = si + 1 + " / " + n;
+          };
+          $("slp").onclick = function () {
+            go2(-1);
+          };
+          $("sln").onclick = function () {
+            go2(1);
+          };
+          go2(0);
+          $("vl").href = x.u;
+          $("vl").textContent = "Abrir publicación";
+          $("vl").style.display = x.u ? "" : "none";
+          $("viewer").showModal();
+          return;
+        }
         $("vl").href = x.u;
         $("vl").style.display = e && e.k === "video" ? "none" : "";
         $("vl").textContent =
@@ -1587,9 +1814,11 @@
           vd.onloadedmetadata = function () {
             var h = x.o ? x.o === "h" : vd.videoWidth >= vd.videoHeight;
             $("vf").className = h ? "hbox" : "phone";
+            $("viewer").classList.toggle("wide", h);
           };
         } else {
           var vert = x.o ? x.o === "v" : e.v;
+          $("viewer").classList.toggle("wide", !vert); // horizontal → visor más ancho
           b.innerHTML =
             '<div class="' +
             (vert ? "phone" : "hbox") +
@@ -1619,6 +1848,8 @@
           render();
         };
       });
+      // El botón de edición está OCULTO para los visitantes. Solo aparece si abrís la web con #admin al final (ej: tusitio.com/#admin).
+      if (/[?&#]admin/.test(location.href)) $("editBtn").hidden = false;
       // Modo edición: 1er click activa el modo (muestra ×), los siguientes abren el modal para agregar.
       $("editBtn").onclick = function () {
         var eb = $("editBtn");

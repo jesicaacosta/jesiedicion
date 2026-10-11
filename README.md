@@ -161,6 +161,75 @@ Todo texto dinámico que entra por `innerHTML` pasa por `esc()` para evitar inye
 
 ---
 
+## Videos: embeds y archivos propios
+
+El visor (`show()` + `embedInfo()`) decide cómo mostrar cada link:
+
+| `u` en `SEED` | Se muestra |
+|---|---|
+| `https://www.tiktok.com/@user/video/123…` | iframe oficial de TikTok, en marco de celular |
+| `https://www.instagram.com/reel/XXXX/` (o `/p/`, `/tv/`) | iframe de Instagram, en marco de celular |
+| `https://www.youtube.com/shorts/ID` | iframe de YouTube, en marco de celular |
+| `https://www.youtube.com/watch?v=ID` | iframe de YouTube, 16:9 |
+| `videos/reel1.mp4` (o `.webm`, `.mov`) | `<video>` propio; el marco (celular o 16:9) se elige según el tamaño real del video |
+
+Campo opcional `o` para forzar orientación: `"v"` (celular) o `"h"` (horizontal).
+
+### Portadas
+
+La forma de la tarjeta sigue la orientación del trabajo (`orient()`):
+
+| Trabajo | Portada |
+|---|---|
+| YouTube normal, webs | horizontal 16:9 |
+| TikTok, Instagram, YouTube Shorts | vertical 9:16 |
+| Video propio (`.mp4`) | se mide el video: vertical u horizontal |
+
+Se puede forzar con `o: "v"` o `o: "h"`. La imagen de portada va en `cover` con ruta relativa y barras `/` (ej. `"videos/s.png"`). Usá imágenes 1280×720 (horizontal) o 720×1280 (vertical).
+
+### Carruseles de diseño
+
+Categoría `Diseño` (el filtro aparece solo si hay al menos un trabajo). Se cargan en `SEED` con una lista de imágenes; la portada es la primera:
+
+```js
+{ t: "Carrusel para Cliente X", c: "Diseño", imgs: ["img/c1.jpg", "img/c2.jpg", "img/c3.jpg"], u: "" }
+```
+
+El visor las muestra en formato 4:5 con flechas y contador. `u` es opcional (link al post original).
+
+### Modo edición (solo para vos)
+
+El botón **Editar portfolio** está oculto para los visitantes. Para verlo, abrí la web con `#admin` al final (ej. `index.html#admin`). Lo que se agregue ahí queda solo en tu navegador; lo definitivo va en `SEED`.
+
+### Tamaño de las tarjetas
+
+Los trabajos horizontales (YouTube, webs) ocupan 2 columnas de la grilla (`.item.h`) y abren en un visor más ancho (`dialog.wide`). Los verticales y los carruseles mantienen su tarjeta angosta.
+
+### Subir videos propios (pesados)
+
+El HTML no puede contener videos grandes (y `localStorage` tiene ~5 MB), así que los archivos van **al lado del HTML** y se referencian por ruta:
+
+```
+.
+├── index.html
+└── videos/
+    ├── reel1.mp4
+    └── reel2.mp4
+```
+
+```js
+{ t: "Mi reel", c: "Video", u: "videos/reel1.mp4", cover: "" }
+```
+
+La portada se genera sola con el primer cuadro del video. Para achicar los archivos (vertical 720×1280, ~5–15 MB):
+
+```bash
+ffmpeg -i original.mp4 -vf "scale=-2:1280" -c:v libx264 -crf 28 -preset slow \
+       -c:a aac -b:a 96k -movflags +faststart reel1.mp4
+```
+
+`+faststart` permite que el video empiece a reproducirse antes de descargarse completo. Si son muchos o muy pesados, conviene un servicio de video (YouTube "no listado", Cloudinary, Bunny Stream, Vimeo) y usar el link/embed correspondiente.
+
 ## Diseño y branding
 
 Las variables CSS están en `:root`:
@@ -182,6 +251,16 @@ Las variables CSS están en `:root`:
 
 Para cambiar la marca basta con modificar las variables y el `<link>` de Google Fonts del `<head>`.
 
+## Animaciones y efectos
+
+Todo en CSS + JS puro, sin librerías (bloque `EFECTOS / ANIMACIONES` del script):
+
+- **Hero** con palabra rotativa (`words`), luces de fondo, línea de tiempo con cabezal y cinta de servicios (`MQ`).
+- **Reveal al scrollear** (`reveal()` + `IntersectionObserver`), escalonado.
+- **Barra de progreso**, navbar que se compacta y link de sección activa (scrollspy).
+- **Tarjetas**: foco de luz que sigue al mouse (`.spot`), elevación, zoom y botón ▶ en videos.
+- Todo se desactiva con `prefers-reduced-motion`.
+
 ## Accesibilidad
 
 - Modales con `<dialog>` nativo (foco y `Esc` resueltos por el navegador).
@@ -194,7 +273,7 @@ Para cambiar la marca basta con modificar las variables y el `<link>` de Google 
 ## Limitaciones conocidas
 
 - **Los trabajos agregados con el modo edición se guardan solo en el navegador** (`localStorage`). Para que los vea todo el mundo, hay que sumarlos a `SEED`.
-- **TikTok e Instagram no se embeben**: sus reproductores requieren scripts propios. Se muestra un botón que abre la plataforma.
+- **Los embeds de TikTok / Instagram / YouTube necesitan que la página esté en un hosting propio** (Netlify, Vercel, GitHub Pages…). En vistas previas con restricciones de seguridad (CSP) pueden no cargar. Solo funcionan con publicaciones **públicas**; para TikTok hay que usar el link completo (`…/video/123456…`), no el corto `vm.tiktok.com`.
 - `localStorage` tiene un límite (~5 MB): por eso se comprimen las portadas.
 - `<dialog>.showModal()` requiere navegadores modernos (todos los actuales lo soportan).
 - Los precios son texto fijo: no hay CMS ni panel de administración.
